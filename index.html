@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Friends Wall Social Network</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+        <meta name="theme-color" content="#000000" />
+        <link rel="stylesheet" type="text/css" href="css/w3.css" />
+        <link rel="stylesheet" type="text/css" href="css/custom.css" />
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+    </head>
+    <body style="background-image: url('img/bg.jpg');background-attachment: fixed;background-size: cover;">
+        <div class="w3-center" style="z-index: 1;" id="butcon">
+            <button class="w3-button w3-hover-black w3-black" onclick="$('#loginc').hide();$('#registerc').slideToggle();" data-ripple="rgba(255, 255, 255, 1)"><span class="fas fa-user-plus"></span> Register</button>
+            &nbsp;&nbsp;
+            <button class="w3-button w3-hover-black w3-black" onclick="$('#registerc').hide();$('#loginc').slideToggle();" data-ripple="rgba(255, 255, 255, 1)"><span class="fas fa-sign-in-alt"></span> Login</button>
+        </div>
+        <div class="w3-card-2 w3-animate-top" style="width: 400px;max-width: 100%;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;display: none;z-index: 2;margin: auto;margin-top: 8px;" id="loginc">
+            <div class="w3-container w3-black"><h3>Login</h3><div class="w3-card-4 w3-padding" style="position: absolute;right: 0;top: 0;background-color: rgba(255, 255, 255, .2);border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;cursor: pointer;"  data-ripple onclick="$('#loginc').slideUp();"><span class="fas fa-times w3-xlarge"></span></div></div>
+            <div class="w3-padding" style="border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;opacity: 0.7;background-color: white;">
+                <div class="w3-row w3-section">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fa fa-user"></i></div>
+                    <div class="w3-rest">
+                        <input type="text" class="w3-input" placeholder="username" />
+                    </div>
+                </div>
+                <div class="w3-row w3-section">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fas fa-key"></i></div>
+                    <div class="w3-rest">
+                        <input type="password" class="w3-input" placeholder="password" />
+                    </div>
+                </div>
+
+
+                <div class="w3-center w3-margin-top w3-margin-bottom"><button type="submit" class="w3-button w3-black w3-hover-shadow w3-hover-black" data-ripple="rgba(255, 255, 255, 1)" onclick="toast('Signing in...', 1500);"><span class="fas fa-check"></span> Login</button></div>
+            </div>
+        </div>
+
+
+        <div class="w3-card-2 w3-animate-top" style="width: 400px;max-width: 100%;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;display: none;z-index: 2;margin: auto;margin-top: 8px;" id="registerc">
+            <div class="w3-container w3-black"><h3>Register</h3><div class="w3-card-4 w3-padding" style="position: absolute;right: 0;top: 0;background-color: rgba(255, 255, 255, .2);border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;cursor: pointer;" data-ripple onclick="$('#registerc').slideUp();"><span class="fas fa-times w3-xlarge"></span></div></div>
+            <div class="w3-padding" style="border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;opacity: 0.7;background-color: white;">
+                <div class="w3-row w3-section">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fa fa-user"></i></div>
+                    <div class="w3-rest">
+                        <input type="text" class="w3-input" placeholder="username" />
+                    </div>
+                </div>
+                <div class="w3-row w3-section">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fas fa-at"></i></div>
+                    <div class="w3-rest">
+                        <input type="email" class="w3-input" placeholder="email" />
+                    </div>
+                </div>
+                <div class="w3-row w3-section">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fa fa-key"></i></div>
+                    <div class="w3-rest">
+                        <input type="password" class="w3-input" placeholder="password" />
+                    </div>
+                </div>
+                <div class="w3-row w3-section">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fa fa-key"></i></div>
+                    <div class="w3-rest">
+                        <input type="password" class="w3-input" placeholder="confirm password" />
+                    </div>
+                </div>
+
+                <div class="w3-center w3-margin-top w3-margin-bottom"><button type="submit" class="w3-button w3-black w3-hover-shadow w3-hover-black" data-ripple="rgba(255, 255, 255, 1)" onclick="toast('successfully registered...', 1500);"><span class="fas fa-check"></span> Register</button></div>
+            </div>
+        </div>
+
+        <div class="toast w3-card" style="position: fixed;font-size: 1.2em;display: none;height: 2.5em;line-height: 2.5em;background-color: #323232;color: #d1d1d1;opacity: .9;top: 2%;right: 2%;padding-left: 8px;padding-right: 8px;"></div>
+
+        <script type="text/javascript" src="js/fontawesome-all.min.js"></script>
+        <script type="text/javascript" src="js/custom.js"></script>
+    </body>
+</html>
