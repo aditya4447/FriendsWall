@@ -1,0 +1,276 @@
+<?php
+/*
+ * Copyright (C) 2019 Aditya Nathwani <adityanathwani@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+namespace ExpenseMgr\Users;
+
+use ExpenseMgr\Configs\DB;
+use PDO;
+
+/**
+ * This class contains various methods for handling user accounts.
+ * 
+ * All the activities related to user account can be done with this class like
+ * creating user account, updating and deleting.
+ * @author Aditya Nathwani <adityanathwani@gmail.com>
+ */
+class User
+{
+
+    private $id;
+    private $username;
+    private $email;
+    private $password;
+    private $db;
+
+    /**
+     * The constructor accepts attributes associated with user accounts.
+     * 
+     * To create new user, provide all of the user information.
+     * To get existing user, leave all the arguments blank. after that
+     * you can initialize the object using {@see User::setId()} or
+     * {@see User::setUsername} and set argument $initObject to true.
+     * 
+     * @param string $username username of the user.
+     * @param string $email email of the user.
+     * @param string $password password of the user.
+     */
+    public function __construct(
+        string $username = null,
+        string $email = null,
+        string $password = null
+    ) {
+        $this->db = new PDO(
+            'mysql:host=' . DB::HOST . ';dbname=' . DB::DB_NAME,
+            DB::USERNAME, DB::PASSWORD,
+            array(
+            PDO::ATTR_PERSISTENT => true,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            )
+        );
+        if ($username === null && $email === null && $password === null) {
+            return;
+        }
+        $this->setUsername($username);
+        $this->setEmail($email);
+        $this->setPassword($password);
+    }
+
+    /**
+     * Sets id of the user.
+     * 
+     * You can also initialize the object using this method by setting
+     * $initObject to true. This will change other attributes
+     * (username, password) etc. corresponding to given $id.
+     * 
+     * @param int $id ID of the user.
+     * @param bool $initObject set this to true to initialize object
+     * according to given $id.
+     * @return \ExpenseMgr\Users\User
+     * @throws InvalidUserAttributeException
+     */
+    public function setId(int $id, bool $initObject = false): User
+    {
+        if ($initObject) {
+            $stmt = $this->db->prepare('SELECT * FROM users where id = ?');
+            $flagUserExists = false;
+            if ($stmt->execute(array($id))) {
+                while ($row = $stmt->fetch()) {
+                    $this->id = $row['id'];
+                    $this->username = $row['username'];
+                    $this->password = $row['password'];
+                    $this->email = $row['email'];
+                    $flagUserExists = true;
+                }
+                if(!$flagUserExists) {
+                    throw new InvalidUserAttributeException("User with given id doesnot exist");
+                }
+            }
+        } else {
+            $this->id = $id;
+        }
+        return $this;
+    }
+
+    /**
+     * Returns the id of the user or null if not set in the object.
+     * 
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Sets username of the user.
+     * 
+     * You can also initialize the object using this method by setting
+     * $initObject to true. This will change other attributes
+     * (id, password) etc. corresponding to given $username.
+     * 
+     * @param int $username username of the user.
+     * @param bool $initObject set this to true to initialize object
+     * according to given $usrname.
+     * @return \ExpenseMgr\Users\User
+     * @throws InvalidUserAttributeException
+     */
+    public function setUsername(string $username, bool $initObject = false): User
+    {
+        if (!preg_match('/^\w{5,30}$/', $username)) {
+            throw new InvalidUserAttributeException('Username must only contain letters (a-z/A-Z), numbers (0-9) and underscore(_)');
+        }
+        if ($initObject) {
+            $stmt = $this->db->prepare('SELECT * FROM users where username = ?');
+            $flagUserExists = false;
+            if ($stmt->execute(array($username))) {
+                while ($row = $stmt->fetch()) {
+                    $this->id = $row['id'];
+                    $this->username = $row['username'];
+                    $this->password = $row['password'];
+                    $this->email = $row['email'];
+                    $flagUserExists = true;
+                }
+                if(!$flagUserExists) {
+                    throw new InvalidUserAttributeException("User with given username doesnot exist");
+                }
+            }
+        } else {
+            $this->username = $username;
+        }
+        return $this;
+    }
+
+    /**
+     * Returns the username of the user or null if not set in the object.
+     * 
+     * @return string|null
+     */
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    /**
+     * Sets email of the user
+     * 
+     * @param string $email email of the user
+     * @return \ExpenseMgr\Users\User
+     * @throws InvalidUserAttributeException
+     */
+    public function setEmail(string $email): User
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidUserAttributeException('Invalid email');
+        }
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * Returns the email address of the user or null if not set in the object.
+     * 
+     * @return string|null
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * Sets password of the user.
+     * 
+     * If password is not already hashed, set $isHashed to false(default). When
+     * $isHashed if flase, the method will validate the password, throw
+     * {@see InvalidUserAttributeException} if password is invalid and store
+     * hashed password.
+     * @param string $password password of the user either hashed or unhashed
+     * @param bool $isHashed set true if password is already hashed. false
+     * otherwise
+     * @return \ExpenseMgr\Users\User
+     * @throws InvalidUserAttributeException
+     */
+    public function setPassword(string $password, bool $isHashed = false): User
+    {
+        if ($isHashed) {
+            $this->password = $password;
+        } else {
+            if(strlen($password) < 8) {
+                throw new InvalidUserAttributeException('Password must contain atleast 8 caracters');
+            }
+            $this->password = password_hash($password, PASSWORD_BCRYPT);
+        }
+        return $this;
+    }
+
+    /**
+     * Verifies a password and returns true if given password if correct. false
+     * otherwise
+     * 
+     * @param string $password password to be verified.
+     * @return bool
+     */
+    public function isPassword($password): bool
+    {
+        return password_verify($password, $this->password);
+    }
+
+    /**
+     * Creates a new user.
+     * 
+     * username, email, and password must be set either
+     * using constructor or by using corresponding methods.
+     * 
+     * @return \ExpenseMgr\Users\User
+     */
+    public function create(): User
+    {
+        $stmt = $this->db->prepare('INSERT INTO users (username, email, password) VALUES (:username, :email, :password)');
+        $stmt->bindParam(':username', $this->username);
+        $stmt->bindParam(':email', $this->email);
+        $stmt->bindParam(':password', $this->password);
+        $stmt->execute();
+        $this->id = $this->db->lastInsertId();
+        return $this;
+    }
+
+    /**
+     * Updates the user details.
+     * 
+     * username, email and password must be set to updated ones using
+     * corresponding methods.
+     * 
+     * @return \ExpenseMgr\Users\User
+     */
+    public function update(): User
+    {
+        $stmt = $this->db->prepare("UPDATE users set usrname=?, email=?, password=? WHERE id='" . $this->id . "'");
+        $stmt->bindParam(':username', $this->username);
+        $stmt->bindParam(':email', $this->email);
+        $stmt->bindParam(':password', $this->password);
+        $stmt->execute();
+        $stmt2 = $this->db->prepare('SELECT * FROM users where id = ?');
+        if ($stmt2->execute(array($this->id))) {
+            while ($row = $stmt->fetch()) {
+                $this->id = $row['id'];
+                $this->username = $row['username'];
+                $this->password = $row['password'];
+                $this->email = $row['email'];
+            }
+        }
+        return $this;
+    }
+}

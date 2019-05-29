@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2019 Aditya Nathwani <adityanathwani@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Home - Friends' Wall Social Network</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+        <meta name="theme-color" content="#000000" />
+        <link rel="stylesheet" type="text/css" href="css/w3.css" />
+        <link rel="stylesheet" type="text/css" href="css/custom.css" />
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+    </head>
+    <body style="background-image: url('img/bg.jpg');background-attachment: fixed;background-size: cover;">
+
+        <div class="w3-sidebar w3-bar-block w3-animate-left w3-collapse background" style="display:none" id="leftMenu">
+            <div class="w3-center w3-border-top w3-padding"><img src="api/media/dp/default.jpg" height="125" width="125" alt="Profile Picture" class="w3-circle w3-border" /></div>
+            <button class="w3-bar-item w3-button w3-border-bottom w3-center" onclick="loadPage('Profile')">Profile</button>
+            <button class="w3-bar-item w3-button" onclick="loadPage('wall')">Wall</button>
+            <button class="w3-bar-item w3-button" onclick="loadPage('messages')">Messages</button>
+            <button class="w3-bar-item w3-button" onclick="loadPage('groups')">Groups</button>
+            <button class="w3-bar-item w3-button" onclick="loadPage('search')">Search</button>
+            <button class="w3-bar-item w3-button" onclick="loadPage('logout')">Logout</button>
+        </div>
+
+        <div class="w3-sidebar w3-bar-block w3-animate-right w3-collapse background" style="display:none;right:0;" id="rightMenu">
+            <a href="#" class="w3-bar-item w3-button w3-border-top">Link 1</a>
+            <a href="#" class="w3-bar-item w3-button">Link 2</a>
+            <a href="#" class="w3-bar-item w3-button">Link 3</a>
+        </div>
+
+        <div class="w3-main w3-white" style="opacity: 0.7;margin-left:200px;margin-right:200px;" id="main">
+            <div class="w3-cell-row">
+                <div class="w3-cell w3-hide-large" style="text-align: left">
+                    <button onclick="toggleMenu('left');" class="w3-button w3-large w3-hover-none" data-ripple="rgba(0, 0, 0, 1)" style="border-bottom-left-radius: 0;border-bottom-right-radius: 0;"><span class="fas fa-bars"></span></button>
+                </div>
+                <div class="w3-cell w3-cell-middle w3-xlarge" style="text-align: center">Friends' Wall</div>
+                <div class="w3-cell w3-hide-large" style="text-align: right">
+                    <button onclick="toggleMenu('right');" class="w3-button w3-large w3-hover-none" data-ripple="rgba(0, 0, 0, 1)" style="border-bottom-left-radius: 0;border-bottom-right-radius: 0;"><span class="fas fa-bars"></span></button>
+                </div>
+            </div>
+        </div>
+        <div class="w3-main w3-container" style="margin-left:200px;margin-right:200px;" id="content">
+            <div id="loader" class="w3-center"><span class="fas fa-spinner fa-spin w3-xlarge"></span><br>Loading</div>
+        </div>
+        <script type="text/javascript" src="js/fontawesome-all.min.js"></script>
+        <script type="text/javascript" src="js/custom.js"></script>
+        <script>
+            var menu = {'left': $('#leftMenu'), 'right': $('#rightMenu')};
+            var content = $("#content");
+            var loadedPages = {};
+            function toggleMenu(side) {
+                if(side === 'left') {
+                    menu['right'].hide();
+                } else {
+                    menu['left'].hide();
+                }
+                menu[side].toggle();
+            }
+            $(function() {
+                var mainHeight = $('#main').height();
+                $('.w3-sidebar').css('margin-top', mainHeight).css('padding-top', mainHeight);
+                $(window).resize(function() {
+                    $('.w3-sidebar').css('margin-top', $('#main').height()).css('padding-top', mainHeight);
+                });
+                loadPage('wall');
+            });
+            function loadPage(page) {
+                menu['left'].hide();
+                menu['right'].hide();
+                $(content).children("div").hide();
+                if(loadedPages[page]) {
+                    $("#page"+page).show();
+                } else {
+                    $(content).children("#loader").show();
+                    $('<div />').load("pages/"+page+".html", function(response, status){
+                        
+                        if (status !== "success" && status !== "notmodified") {
+                            console.log(status);
+                            this.innerHTML = "Error loading "+page;
+                        }
+                        loadedPages[page] = true;
+                        $(content).children("#loader").hide();
+                    }).attr("id", "page"+page).appendTo(content);
+                }
+            }
+        </script>
+    </body>
+</html>

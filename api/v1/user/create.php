@@ -18,7 +18,7 @@
 header("Content-Type: application/json");
 require '../../vendor/autoload.php';
 
-use \FriendsWall\Users\User;
+use FriendsWall\Users\User;
 use FriendsWall\Users\InvalidUserAttributeException;
 
 $output = ['success' => true, 'error' => ''];
@@ -32,13 +32,19 @@ if (
     empty($_POST['last_name']) ||
     empty($_POST['gender']) ||
     empty($_POST['dob']) ||
-    empty($_POST['password'])
+    empty($_POST['password']) ||
+    empty($_POST['confirm_password'])
 ) {
     $success = false;
     $error = 'Data incomplete.';
     goto output;
 }
 
+if($_POST['password'] !== $_POST['confirm_password']) {
+    $success = false;
+    $error = 'Password and Confirm password does not match.';
+    goto output;
+}
 
 try {
     $user = new User($_POST['email'], $_POST['first_name'], $_POST['last_name'], $_POST['gender'], $_POST['dob'], $_POST['password']);
@@ -48,7 +54,7 @@ try {
     $error = $exc->getMessage();
 } catch (Exception $exc) {
     $success = false;
-    $error = "Unknown error occured. Please contact administrator. ".$exc->getMessage();
+    $error = FriendsWall\Configs\Strings::UNKNOWN_ERROR;
 }
 
 output:

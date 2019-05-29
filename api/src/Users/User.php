@@ -87,7 +87,7 @@ class User
      * 
      * You can also initialize the object using this method by setting
      * $initObject to true. This will change other attributes
-     * (username, password) etc. corresponding to given $id.
+     * (email, password) etc. corresponding to given $id.
      * 
      * @param int $id ID of the user.
      * @param bool $initObject set this to true to initialize object
@@ -105,7 +105,7 @@ class User
                     $this->id = $row['id'];
                     $this->email = $row['email'];
                     $this->firstName = $row['first_name'];
-                    $this->username = $row['last_name'];
+                    $this->lastName = $row['last_name'];
                     $this->gender = $row['gender'];
                     $this->dob = $row['dob'];
                     $this->password = $row['password'];
@@ -157,7 +157,7 @@ class User
                     $this->id = $row['id'];
                     $this->email = $row['email'];
                     $this->firstName = $row['first_name'];
-                    $this->username = $row['last_name'];
+                    $this->lastName = $row['last_name'];
                     $this->gender = $row['gender'];
                     $this->dob = $row['dob'];
                     $this->password = $row['password'];
@@ -341,13 +341,15 @@ class User
      */
     public function create(): User
     {
-        $stmt = $this->db->prepare('INSERT INTO users (email, first_name, last_name, gender, dob, password) VALUES (:email, :first_name, :last_name, :gender, :dob, :password)');
+        $stmt = $this->db->prepare('INSERT INTO users (email, first_name, last_name, gender, dob, password, regtime) VALUES (:email, :first_name, :last_name, :gender, :dob, :password, :regtime)');
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':first_name', $this->firstName);
         $stmt->bindParam(':last_name', $this->lastName);
         $stmt->bindParam(':gender', $this->gender);
         $stmt->bindParam(':dob', $this->dob);
         $stmt->bindParam(':password', $this->password);
+        $time = time();
+        $stmt->bindParam(':regtime', $time);
         try {
             $stmt->execute();
         } catch (\PDOException $ex) {
@@ -385,7 +387,7 @@ class User
                 $this->id = $row['id'];
                 $this->email = $row['email'];
                 $this->firstName = $row['first_name'];
-                $this->username = $row['last_name'];
+                $this->lastName = $row['last_name'];
                 $this->gender = $row['gender'];
                 $this->dob = $row['dob'];
                 $this->password = $row['password'];
