@@ -1,1 +1,40 @@
-<p>Hello, This is profile.</p>
+<div class="background" style="min-height: 90vh;padding-top: 16px;">
+    <div class="w3-center" style="max-width: 100%;width: 600px;margin-left: auto;margin-right: auto;">
+        <img src="api/media/dp/default.jpg" style="height: 125px;width:125px;vertical-align: text-top;" class="dp w3-circle" alt="Profile Picture" />
+        <button class="w3-button w3-hover-none" data-ripple="rgba(0,0,0,1)" onclick="$('#file').click();"><span class="fas fa-edit"></span></button>
+    </div>
+    <input type="file" style="display: none" id="file" onchange="changeDp();" />
+</div>
+<script>
+    function changeDp() {
+        loadPage('loader');
+        var fd = new FormData();
+        fd.append('file', document.getElementById('file').files[0]);
+        $.ajax({
+            url: base_url + '/profile/uploaddp.php',
+            type: 'POST',
+            data: fd,
+            success: function(data){
+                if (data.success) {
+                    loadTmpPage('change_profile_picture');
+                } else if(data.logout) {
+                    loadPage('logout');
+                } else if (data.error) {
+                    toast(data.error, 2000);
+                    loadPage('profile');
+                } else {
+                    toast('Unknown error occured');
+                    loadPage('profile');
+                }
+            },
+            fail: function() {
+                toast('Unknown error occured');
+                loadPage('profile');
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    }
+    updateDP();
+</script>

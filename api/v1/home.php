@@ -20,6 +20,7 @@ include '../vendor/autoload.php';
 use FriendsWall\Users\InvalidUserAttributeException;
 use FriendsWall\Users\User;
 
+header('Content-Type: application/json');
 $output = ['success' => true, 'error' => '', 'data' => []];
 $success = &$output['success'];
 $error = &$output['error'];
@@ -32,6 +33,7 @@ if (isset($_POST['sid'])) {
 session_start();
 if (!isset($_SESSION['id'])) {
     $success = false;
+    $output["logout"] = true;
     $error = 'No user logged in. Please login to continue';
     goto output;
 }
@@ -40,11 +42,12 @@ try {
     $user = new User();
     $user->setId($_SESSION['id'], true);
     session_write_close();
-    $data["user"] = array(
+    $data["user"] = [
         'first_name' => $user->getFirstName(),
         'last_name' => $user->getLastName(),
-        'email' => $user->getEmail(),
-    );
+        'media' => $user->getMedia(),
+        'dp' => $user->getDP()
+    ];
 } catch (InvalidUserAttributeException $exc) {
     $success = false;
     $error = $exc->getMessage();

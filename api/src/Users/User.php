@@ -37,6 +37,8 @@ class User
     private $gender;
     private $dob;
     private $password;
+    private $media = "";
+    private $dp = "";
     private $db;
 
     /**
@@ -109,6 +111,8 @@ class User
                     $this->gender = $row['gender'];
                     $this->dob = $row['dob'];
                     $this->password = $row['password'];
+                    $this->media = $row['media'];
+                    $this->dp = $row['dp'];
                     $flagUserExists = true;
                 }
                 if (!$flagUserExists) {
@@ -161,6 +165,8 @@ class User
                     $this->gender = $row['gender'];
                     $this->dob = $row['dob'];
                     $this->password = $row['password'];
+                    $this->media = $row['media'];
+                    $this->dp = $row['dp'];
                     $flagUserExists = true;
                 }
                 if (!$flagUserExists) {
@@ -324,9 +330,45 @@ class User
      * @param string $password password to be verified.
      * @return bool
      */
+    
+    /**
+     * Returns media directory of the user or empty string if not set in the object.
+     * 
+     * @return string
+     */
+    public function getMedia(): string
+    {
+        return $this->media;
+    }
+    
     public function isPassword($password): bool
     {
         return password_verify($password, $this->password);
+    }
+    /**
+     * Sets DP name of the user
+     * 
+     * @param string $name name of DP without extension (8 characters)
+     * @return \FriendsWall\Users\User
+     * @throws InvalidUserAttributeException
+     */
+    public function setDP(string $name): User
+    {
+        if (!preg_match("/^[a-zA-Z0-9]{8}$/", $name)) {
+            throw new InvalidUserAttributeException('DP Name invalid');
+        }
+        $this->dp = $name;
+        return $this;
+    }
+
+    /**
+     * Returns DP name of the user or empty string if not set in the object.
+     * 
+     * @return string
+     */
+    public function getDP(): string
+    {
+        return $this->dp;
     }
 
     /**
@@ -341,15 +383,17 @@ class User
      */
     public function create(): User
     {
-        $stmt = $this->db->prepare('INSERT INTO users (email, first_name, last_name, gender, dob, password, regtime) VALUES (:email, :first_name, :last_name, :gender, :dob, :password, :regtime)');
+        $stmt = $this->db->prepare('INSERT INTO users (email, first_name, last_name, gender, dob, password, regtime, media) VALUES (:email, :first_name, :last_name, :gender, :dob, :password, :regtime, :media)');
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':first_name', $this->firstName);
         $stmt->bindParam(':last_name', $this->lastName);
         $stmt->bindParam(':gender', $this->gender);
         $stmt->bindParam(':dob', $this->dob);
         $stmt->bindParam(':password', $this->password);
-        $time = time();
+        $time = date('Y-m-d H:i:s');
         $stmt->bindParam(':regtime', $time);
+        $media = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),0,8);
+        $stmt->bindParam(':media', $media);
         try {
             $stmt->execute();
         } catch (\PDOException $ex) {
@@ -373,17 +417,18 @@ class User
      */
     public function update(): User
     {
-        $stmt = $this->db->prepare("UPDATE users set email=?, first_name=?, last_name=?, gender=?, dob=?, password=? WHERE id='" . $this->id . "'");
+        $stmt = $this->db->prepare("UPDATE users set email=:email, first_name=:first_name, last_name=:last_name, gender=:gender, dob=:dob, password=:password, dp=:dp WHERE id='" . $this->id . "'");
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':first_name', $this->firstName);
         $stmt->bindParam(':last_name', $this->lastName);
         $stmt->bindParam(':gender', $this->gender);
         $stmt->bindParam(':dob', $this->dob);
         $stmt->bindParam(':password', $this->password);
+        $stmt->bindParam(':dp', $this->dp);
         $stmt->execute();
         $stmt2 = $this->db->prepare('SELECT * FROM users where id = ?');
         if ($stmt2->execute(array($this->id))) {
-            while ($row = $stmt->fetch()) {
+            while ($row = $stmt2->fetch()) {
                 $this->id = $row['id'];
                 $this->email = $row['email'];
                 $this->firstName = $row['first_name'];
@@ -391,6 +436,8 @@ class User
                 $this->gender = $row['gender'];
                 $this->dob = $row['dob'];
                 $this->password = $row['password'];
+                $this->media = $row['media'];
+                $this->dp = $row['dp'];
             }
         }
         return $this;

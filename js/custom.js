@@ -58,6 +58,9 @@ jQuery(function ($) {
 });
 
 function toast(content, timeOut) {
+    if (!timeout === undefined) {
+        var timeout = 3000;
+    }
     $('.toast').clone().html(content).appendTo('body').fadeIn().delay(timeOut).fadeOut(function () {
         this.remove();
     });
