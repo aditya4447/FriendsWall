@@ -1,11 +1,23 @@
-<div class="background" style="min-height: 90vh;padding-top: 16px;">
+<div class="" style="padding-top: 16px;">
     <div class="w3-center" style="max-width: 100%;width: 600px;margin-left: auto;margin-right: auto;">
         <img src="api/media/dp/default.jpg" style="height: 125px;width:125px;vertical-align: text-top;" class="dp w3-circle" alt="Profile Picture" />
-        <button class="w3-button w3-hover-none" data-ripple="rgba(0,0,0,1)" onclick="$('#file').click();"><span class="fas fa-edit"></span></button>
+        <button class="w3-button w3-hover-none" data-ripple="rgba(0,0,0,1)" onclick="$('#file').click();" style="position: absolute;"><span class="fas fa-upload"></span></button>
     </div>
     <input type="file" style="display: none" id="file" onchange="changeDp();" />
+    <div class="w3-center w3-padding-small" style="max-width: 100%;width: 600px;margin: auto;">
+        <span style="display: inline-block" class="background w3-padding-small w3-card-2 w3-margin border-bottom full_name"></span>
+        <!--<div id="profile_about_textarea" class="background">
+            <textarea placeholder="Write something about yourself" class="w3-input w3-border-top w3-border-left w3-border-right"></textarea>
+            <button class="w3-button w3-green w3-hover-green w3-right w3-margin-top" data-ripple='rgba(255,255,255,1)'>Save</button>
+        </div>-->
+    </div>
+    <button class="w3-button w3-right w3-black w3-hover-black w3-margin-right" data-ripple='rgba(255,255,255,1)' onclick="loadTmpPage('edit_profile')">Edit profile</button>
 </div>
 <script>
+//    if (!userinfo['about']) {
+//        $("#profile_about_textarea").show();
+//    }
+    updateProfile();
     function changeDp() {
         loadPage('loader');
         var fd = new FormData();

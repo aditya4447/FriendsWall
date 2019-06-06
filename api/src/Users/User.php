@@ -32,11 +32,13 @@ class User
 
     private $id;
     private $email;
+    private $username;
     private $firstName;
     private $lastName;
     private $gender;
     private $dob;
     private $password;
+    private $about = "";
     private $media = "";
     private $dp = "";
     private $db;
@@ -46,10 +48,12 @@ class User
      * 
      * To create new user, provide all of the user information.
      * To get existing user, leave all the arguments blank. after that
-     * you can initialize the object using {@see User::setId()} or
-     * {@see User::setEmail} and set argument $initObject to true.
+     * you can initialize the object using {@see User::setId()},
+     * {@see User::setUsername()} or {@see User::setEmail} and set argument
+     * $initObject to true.
      * 
      * @param string $email email of the user.
+     * @param string $username username of the user.
      * @param string $firstName first name of the user.
      * @param string $lastName last name of the user.
      * @param string $gender gender of the user (male/female).
@@ -58,6 +62,7 @@ class User
      */
     public function __construct(
         string $email = null,
+        string $username = null,
         string $firstName = null,
         string $lastName = null,
         string $gender = null,
@@ -73,10 +78,11 @@ class User
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             )
         );
-        if ($email === null && $firstName === null && $lastName === null && $gender === null && $dob === null && $password === null) {
+        if ($email === null && $username === null && $firstName === null && $lastName === null && $gender === null && $dob === null && $password === null) {
             return;
         }
         $this->setEmail($email);
+        $this->setUsername($username);
         $this->setFirstName($firstName);
         $this->setLastName($lastName);
         $this->setGender($gender);
@@ -106,11 +112,13 @@ class User
                 while ($row = $stmt->fetch()) {
                     $this->id = $row['id'];
                     $this->email = $row['email'];
+                    $this->username = $row['username'];
                     $this->firstName = $row['first_name'];
                     $this->lastName = $row['last_name'];
                     $this->gender = $row['gender'];
                     $this->dob = $row['dob'];
                     $this->password = $row['password'];
+                    $this->about = $row['about'];
                     $this->media = $row['media'];
                     $this->dp = $row['dp'];
                     $flagUserExists = true;
@@ -160,11 +168,13 @@ class User
                 while ($row = $stmt->fetch()) {
                     $this->id = $row['id'];
                     $this->email = $row['email'];
+                    $this->username = $row['username'];
                     $this->firstName = $row['first_name'];
                     $this->lastName = $row['last_name'];
                     $this->gender = $row['gender'];
                     $this->dob = $row['dob'];
                     $this->password = $row['password'];
+                    $this->about = $row['about'];
                     $this->media = $row['media'];
                     $this->dp = $row['dp'];
                     $flagUserExists = true;
@@ -187,6 +197,62 @@ class User
     public function getEmail(): ?string
     {
         return $this->email;
+    }
+    
+    /**
+     * Sets Username of the user.
+     * 
+     * You can also initialize the object using this method by setting
+     * $initObject to true. This will change other attributes
+     * (id, password) etc. corresponding to given $email.
+     * 
+     * @param int $username username of the user.
+     * @param bool $initObject set this to true to initialize object
+     * according to given $username.
+     * @return \FriendsWall\Users\User
+     * @throws InvalidUserAttributeException
+     */
+    public function setUsername(string $username, bool $initObject = false): User
+    {
+        if (!preg_match('/^\w{5,25}$/', $username)) {
+            throw new InvalidUserAttributeException('Username must be less than 25 characters and must only contain letters (a-z/A-Z), numbers (0-9) and underscore(_)');
+        }
+        if ($initObject) {
+            $stmt = $this->db->prepare('SELECT * FROM users where username = ?');
+            $flagUserExists = false;
+            if ($stmt->execute(array($username))) {
+                while ($row = $stmt->fetch()) {
+                    $this->id = $row['id'];
+                    $this->email = $row['email'];
+                    $this->username = $row['username'];
+                    $this->firstName = $row['first_name'];
+                    $this->lastName = $row['last_name'];
+                    $this->gender = $row['gender'];
+                    $this->dob = $row['dob'];
+                    $this->password = $row['password'];
+                    $this->about = $row['about'];
+                    $this->media = $row['media'];
+                    $this->dp = $row['dp'];
+                    $flagUserExists = true;
+                }
+                if (!$flagUserExists) {
+                    throw new InvalidUserAttributeException('User with given username doesnot exist');
+                }
+            }
+        } else {
+            $this->username = $username;
+        }
+        return $this;
+    }
+
+    /**
+     * Returns the username of the user or null if not set in the object.
+     * 
+     * @return string|null
+     */
+    public function getUsername(): ?string
+    {
+        return $this->username;
     }
 
     /**
@@ -345,6 +411,7 @@ class User
     {
         return password_verify($password, $this->password);
     }
+
     /**
      * Sets DP name of the user
      * 
@@ -372,6 +439,32 @@ class User
     }
 
     /**
+     * Sets About text of the user
+     * 
+     * @param string $about about text of the user (8 characters)
+     * @return \FriendsWall\Users\User
+     * @throws InvalidUserAttributeException
+     */
+    public function setAbout(string $about): User
+    {
+        if (strlen($about) > 256) {
+            throw new InvalidUserAttributeException('about text must be less than 256 characters');
+        }
+        $this->about = $about;
+        return $this;
+    }
+
+    /**
+     * Returns About text of the user or empty string if not set in the object.
+     * 
+     * @return string
+     */
+    public function getAbout(): string
+    {
+        return $this->about;
+    }
+
+    /**
      * Creates a new user.
      * 
      * all user attributes (all the parameters of constructor)
@@ -383,8 +476,9 @@ class User
      */
     public function create(): User
     {
-        $stmt = $this->db->prepare('INSERT INTO users (email, first_name, last_name, gender, dob, password, regtime, media) VALUES (:email, :first_name, :last_name, :gender, :dob, :password, :regtime, :media)');
+        $stmt = $this->db->prepare('INSERT INTO users (email, username, first_name, last_name, gender, dob, password, regtime, media) VALUES (:email, :username, :first_name, :last_name, :gender, :dob, :password, :regtime, :media)');
         $stmt->bindParam(':email', $this->email);
+        $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':first_name', $this->firstName);
         $stmt->bindParam(':last_name', $this->lastName);
         $stmt->bindParam(':gender', $this->gender);
@@ -392,13 +486,22 @@ class User
         $stmt->bindParam(':password', $this->password);
         $time = date('Y-m-d H:i:s');
         $stmt->bindParam(':regtime', $time);
-        $media = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),0,8);
+        do {
+            $media = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),0,8);
+        } while (is_dir('../../media/' . $media));
         $stmt->bindParam(':media', $media);
         try {
             $stmt->execute();
         } catch (\PDOException $ex) {
             if ($ex->getCode() == 23000) {
-                throw new InvalidUserAttributeException("email address already exists. Please login to your account.");
+                if (stristr($ex->getMessage(), 'email')) {
+                    throw new InvalidUserAttributeException("email address already exists. Please login to your account.");
+                } elseif (stristr($ex->getMessage(), 'username')) {
+                    throw new InvalidUserAttributeException("username already exists. Please select different username.");
+                } else {
+                    throw $ex;
+                }
+                
             } else {
                 throw $ex;
             }
@@ -417,25 +520,44 @@ class User
      */
     public function update(): User
     {
-        $stmt = $this->db->prepare("UPDATE users set email=:email, first_name=:first_name, last_name=:last_name, gender=:gender, dob=:dob, password=:password, dp=:dp WHERE id='" . $this->id . "'");
+        $stmt = $this->db->prepare("UPDATE users set email=:email, username=:username, first_name=:first_name, last_name=:last_name, gender=:gender, dob=:dob, password=:password, about=:about, dp=:dp WHERE id='" . $this->id . "'");
         $stmt->bindParam(':email', $this->email);
+        $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':first_name', $this->firstName);
         $stmt->bindParam(':last_name', $this->lastName);
         $stmt->bindParam(':gender', $this->gender);
         $stmt->bindParam(':dob', $this->dob);
         $stmt->bindParam(':password', $this->password);
+        $stmt->bindParam(':about', $this->about);
         $stmt->bindParam(':dp', $this->dp);
-        $stmt->execute();
+        try {
+            $stmt->execute();
+        } catch (\PDOException $ex) {
+            if ($ex->getCode() == 23000) {
+                if (stristr($ex->getMessage(), 'email')) {
+                    throw new InvalidUserAttributeException("email address already exists.");
+                } elseif (stristr($ex->getMessage(), 'username')) {
+                    throw new InvalidUserAttributeException("username already exists. Please select different username.");
+                } else {
+                    throw $ex;
+                }
+                
+            } else {
+                throw $ex;
+            }
+        }
         $stmt2 = $this->db->prepare('SELECT * FROM users where id = ?');
         if ($stmt2->execute(array($this->id))) {
             while ($row = $stmt2->fetch()) {
                 $this->id = $row['id'];
                 $this->email = $row['email'];
+                $this->username = $row['username'];
                 $this->firstName = $row['first_name'];
                 $this->lastName = $row['last_name'];
                 $this->gender = $row['gender'];
                 $this->dob = $row['dob'];
                 $this->password = $row['password'];
+                $this->about = $row['about'];
                 $this->media = $row['media'];
                 $this->dp = $row['dp'];
             }

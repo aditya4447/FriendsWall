@@ -28,6 +28,7 @@ $error = &$output['error'];
 
 if (
     empty($_POST['email']) ||
+    empty($_POST['username']) ||
     empty($_POST['first_name']) ||
     empty($_POST['last_name']) ||
     empty($_POST['gender']) ||
@@ -47,7 +48,7 @@ if($_POST['password'] !== $_POST['confirm_password']) {
 }
 
 try {
-    $user = new User($_POST['email'], $_POST['first_name'], $_POST['last_name'], $_POST['gender'], $_POST['dob'], $_POST['password']);
+    $user = new User($_POST['email'], $_POST['username'], $_POST['first_name'], $_POST['last_name'], $_POST['gender'], $_POST['dob'], $_POST['password']);
     $user->create();
 } catch (InvalidUserAttributeException $exc) {
     $success = false;

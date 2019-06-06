@@ -45,6 +45,7 @@ try {
     $data["user"] = [
         'first_name' => $user->getFirstName(),
         'last_name' => $user->getLastName(),
+        'username' => $user->getUsername(),
         'media' => $user->getMedia(),
         'dp' => $user->getDP()
     ];
