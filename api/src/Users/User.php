@@ -264,7 +264,7 @@ class User
      */
     public function setFirstName(string $firstName): User
     {
-        if (!preg_match("/^[a-zA-Z0-9'-]{5,255}$/", $firstName)) {
+        if (!preg_match("/^[ a-zA-Z0-9'-]{5,255}$/", $firstName)) {
             throw new InvalidUserAttributeException('First Name invalid');
         }
         $this->firstName = $firstName;
@@ -290,7 +290,7 @@ class User
      */
     public function setLastName(string $lastName): User
     {
-        if (!preg_match("/^[a-zA-Z0-9'-]{5,255}$/", $lastName)) {
+        if (!preg_match("/^[ a-zA-Z0-9'-]{5,255}$/", $lastName)) {
             throw new InvalidUserAttributeException('Last Name invalid');
         }
         $this->lastName = $lastName;
@@ -407,7 +407,13 @@ class User
         return $this->media;
     }
     
-    public function isPassword($password): bool
+    /**
+     * check password of the user
+     * 
+     * @param string $password password to compare with
+     * @return bool
+     */
+    public function isPassword(string $password): bool
     {
         return password_verify($password, $this->password);
     }
@@ -441,7 +447,7 @@ class User
     /**
      * Sets About text of the user
      * 
-     * @param string $about about text of the user (8 characters)
+     * @param string $about about text of the user (256 characters)
      * @return \FriendsWall\Users\User
      * @throws InvalidUserAttributeException
      */

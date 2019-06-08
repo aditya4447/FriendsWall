@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="w3-sidebar w3-bar-block w3-animate-left w3-collapse w3-border-right background-light" style="display:none;" id="leftMenu">
             <div class="w3-center w3-border-top w3-padding"><img src="api/media/dp/default.jpg" height="125" width="125" alt="Profile Picture" class="dp w3-circle w3-border" /></div>
             <a class="w3-bar-item w3-button w3-border-bottom w3-center full_name" href="#profile" id="itemprofile">Profile</a>
-            <a class="w3-bar-item w3-button" href="#wall" id="itemwall">Wall</a>
+            <a class="w3-bar-item w3-button" href="#walls" id="itemwalls">Walls</a>
             <a class="w3-bar-item w3-button" href="#messages" id="itemmessages">Messages</a>
             <a class="w3-bar-item w3-button" href="#groups" id="itemgroups">Groups</a>
             <a class="w3-bar-item w3-button" href="#search" id="itemsearch">Search</a>
@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <button class="w3-col w3-button s4 w3-hover-black" data-ripple="rgba(255, 255, 255, 1)"><span class="fas fa-comment-alt"></span></button>
                 <button class="w3-col w3-button s4 w3-hover-black" data-ripple="rgba(255, 255, 255, 1)"><span class="fas fa-bell"></span></button>
             </div>
-            p
+            
         </div>
 
         <div class="w3-main w3-white w3-border-bottom" style="opacity: 0.7;margin-left:200px;margin-right:200px;" id="main">
@@ -111,10 +111,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 if (window.location.hash) {
                     loadPage(window.location.hash.substring(1));
                 } else {
-                    loadPage('wall');
+                    loadPage('walls');
                 }
                 window.onhashchange = function() {
-                    loadPage(window.location.hash.substring(1));
+                    if(window.location.hash.split("/").length > 1) {
+                        loadTmpPage(window.location.hash.substring(1));
+                    } else {
+                        loadPage(window.location.hash.substring(1));
+                    }
                 };
                 $.post(base_url + "/home.php")
                         .done(function (data) {
@@ -170,7 +174,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     }).attr("id", "page" + page).appendTo(content);
                 }
             }
-            function loadTmpPage(page) {
+            function loadTmpPage(fullPage) {
+                var page = fullPage.split('/')[0];
                 closeMenus();
                 $(content).children("div").hide();
                 $(content).children("#pageloader").show();

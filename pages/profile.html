@@ -5,19 +5,13 @@
     </div>
     <input type="file" style="display: none" id="file" onchange="changeDp();" />
     <div class="w3-center w3-padding-small" style="max-width: 100%;width: 600px;margin: auto;">
-        <span style="display: inline-block" class="background w3-padding-small w3-card-2 w3-margin border-bottom full_name"></span>
-        <!--<div id="profile_about_textarea" class="background">
-            <textarea placeholder="Write something about yourself" class="w3-input w3-border-top w3-border-left w3-border-right"></textarea>
-            <button class="w3-button w3-green w3-hover-green w3-right w3-margin-top" data-ripple='rgba(255,255,255,1)'>Save</button>
-        </div>-->
+        <a style="display: inline-block;text-decoration: none;" class="background w3-padding-small w3-card-2 w3-margin border-bottom full_name" id="profile_full_name"></a>
     </div>
     <button class="w3-button w3-right w3-black w3-hover-black w3-margin-right" data-ripple='rgba(255,255,255,1)' onclick="loadTmpPage('edit_profile')">Edit profile</button>
 </div>
 <script>
-//    if (!userinfo['about']) {
-//        $("#profile_about_textarea").show();
-//    }
     updateProfile();
+    $("#profile_full_name").attr("href", "#user/"+userinfo['username']);
     function changeDp() {
         loadPage('loader');
         var fd = new FormData();
