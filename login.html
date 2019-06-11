@@ -142,7 +142,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             }
                         })
                         .fail(function (error) {
-                            if (error.statusCode === 0) {
+                            if (error.status === 0) {
                                 $("#regerror").html("Unknown error occured. Make sure you have working internet connection.");
                             } else {
                                 $("#regerror").html("Unknown error occured. Please contact administrator.");
@@ -173,7 +173,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             }
                         })
                         .fail(function (error) {
-                            if (error.statusCode === 0) {
+                            if (error.status === 0) {
                                 $("#loginerror").html("Unknown error occured. Make sure you have working internet connection.");
                             } else {
                                 $("#loginerror").html("Unknown error occured. Please contact administrator.");

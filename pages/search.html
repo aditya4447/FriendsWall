@@ -49,9 +49,7 @@
                         }
                     })
                     .fail(function (error) {
-                        if (error.statusCode === 0) {
-                            toast("Unknown error occured. Make sure you have working internet connection.");
-                        } else {
+                        if (error.status !== 0) {
                             toast("Unknown error occured. Please contact administrator.");
                         }
                     });

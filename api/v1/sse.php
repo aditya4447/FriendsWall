@@ -17,12 +17,12 @@
  */
 include '../vendor/autoload.php';
 
-use FriendsWall\Informers\UserInformer;
+use FriendsWall\Informers\RequestInformer;
 use FriendsWall\Users\InvalidUserAttributeException;
 use FriendsWall\Users\User;
 use Sse\SSE;
 
-$userInformer = new UserInformer();
+$requestInformer = new RequestInformer();
 $sse = new SSE();
 
 if (isset($_POST['sid'])) {
@@ -30,20 +30,20 @@ if (isset($_POST['sid'])) {
 }
 session_start();
 if (!isset($_SESSION['id'])) {
-    $userInformer->setError('No user logged in. Please login to continue');
+    $requestInformer->setError('No user logged in. Please login to continue');
 } else {
     try {
         $user = new User();
         $user->setId($_SESSION['id'], true);
-        $userInformer->setUser($user);
-        $userInformer->setSSE($sse);
         session_write_close();
+        $requestInformer->setUser($user);
+        $requestInformer->setSSE($sse);
     } catch (InvalidUserAttributeException $exc) {
-        $userInformer->setError($exc->getMessage());
+        $requestInformer->setError($exc->getMessage());
     } catch (Exception $exc) {
-        $userInformer->setError(FriendsWall\Configs\Strings::UNKNOWN_ERROR);
+        $requestInformer->setError(FriendsWall\Configs\Strings::UNKNOWN_ERROR);
     }
 }
 
-$sse->addEventListener('userInfo', $userInformer);
+$sse->addEventListener('requestInfo', $requestInformer);
 $sse->start();

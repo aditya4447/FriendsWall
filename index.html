@@ -44,11 +44,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         <div class="w3-sidebar w3-bar-block w3-animate-right w3-collapse w3-border-left" style="display:none;right:0;" id="rightMenu">
             <div class="w3-row w3-border-top" id="notificationButtons">
-                <button class="w3-col w3-button s4 w3-hover-black" data-ripple="rgba(255, 255, 255, 1)"><span class="fas fa-user-clock"></span></button>
-                <button class="w3-col w3-button s4 w3-hover-black" data-ripple="rgba(255, 255, 255, 1)"><span class="fas fa-comment-alt"></span></button>
-                <button class="w3-col w3-button s4 w3-hover-black" data-ripple="rgba(255, 255, 255, 1)"><span class="fas fa-bell"></span></button>
+                <button id="shortcut_requests" onclick="showShortcut('requests');" class="w3-col w3-button s4 w3-hover-text-red" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-user-clock"></span></button>
+                <button id="shortcut_messages" onclick="showShortcut('messages');" class="w3-col w3-button s4 w3-hover-text-blue" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-comment-alt"></span></button>
+                <button id="shortcut_notifications" onclick="showShortcut('notifications');" class="w3-col w3-button s4 w3-hover-text-green" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-bell"></span></button>
             </div>
-            
+            <div id="shortcutc_requests" style="display:none;"><small class="w3-text-grey">Requests</small>
+                <div id="shortcut_content_requests">
+                    <div id="shortcut_requests_list"></div>
+                    <div id="shortcut_requests_prototype" style="display: none;" class="w3-small w3-padding-small w3-border-bottom w3-cell-row">
+                        <div class="w3-cell-middle w3-cell"><img class="request_dp w3-circle w3-border" style="height: 50px;width: 50px;" alt="profile picture" /></div>
+                        <div class="w3-cell w3-padding-small">
+                            <p class="request_name"></p>
+                            <div class="w3-cell-row">
+                                <div class="w3-cell w3-center"><button class="w3-button w3-blue w3-hover-blue w3-tiny w3-block request_accept" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-check"></span></button></div>
+                                <div class="w3-cell s6 w3-center"><button class="w3-button w3-red w3-hover-red w3-tiny w3-block request_reject" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-times"></span></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="shortcutc_messages" style="display:none;"><small class="w3-text-grey">Messages</small>
+                <div id="shortcut_content_messages"></div>
+            </div>
+            <div id="shortcutc_notifications" style="display:none;"><small class="w3-text-grey">Notifications</small>
+                <div id="shortcut_content_notifications"></div>
+            </div>
         </div>
 
         <div class="w3-main w3-white w3-border-bottom" style="opacity: 0.7;margin-left:200px;margin-right:200px;" id="main">
@@ -80,6 +100,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             var userinfo;
             var titlePrefix = " - Friends' Wall Social Network";
             var title = $("title");
+            var shortcuts = {
+                'requests': $("#shortcut_requests"),
+                'messages': $("#shortcut_messages"),
+                'notifications': $("#shortcut_notifications")
+            };
+            var shortcutsc = {
+                'requests': $("#shortcutc_requests"),
+                'messages': $("#shortcutc_messages"),
+                'notifications': $("#shortcutc_notifications")
+            };
+            var shortcut_requests_prototype = $("#shortcut_requests_prototype");
+            var shortcut_requests_list = $("#shortcut_requests_list");
+            
+            function showShortcut(shortcutName) {
+                shortcuts['requests'].removeClass("w3-red w3-hover-red").addClass("w3-hover-text-red");
+                shortcuts['messages'].removeClass("w3-blue w3-hover-blue").addClass("w3-hover-text-blue");
+                shortcuts['notifications'].removeClass("w3-green w3-hover-green").addClass("w3-hover-text-green");
+                shortcutsc['requests'].hide();
+                shortcutsc['messages'].hide();
+                shortcutsc['notifications'].hide();
+                switch (shortcutName) {
+                    case 'requests':
+                        shortcutsc['requests'].show();
+                        shortcuts['requests'].addClass("w3-red w3-hover-red").removeClass("w3-hover-text-red");
+                        break;
+
+                    case 'messages':
+                        shortcutsc['messages'].show();
+                        shortcuts['messages'].addClass("w3-blue w3-hover-blue").removeClass("w3-hover-text-blue");
+                        break;
+
+                    case 'notifications':
+                        shortcutsc['notifications'].show();
+                        shortcuts['notifications'].addClass("w3-green w3-hover-green").removeClass("w3-hover-text-green");
+                        break;
+
+                    default:
+
+                        break;
+                }
+            }
             function closeMenus() {
                 menu['right'].hide();
                 menu['left'].hide();
@@ -126,6 +187,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 userinfo = data.data.user;
                                 updateProfile();
                                 updateDP();
+                                var sse = new EventSource(base_url + '/sse.php', { 'withCredentials': true });
+                                sse.addEventListener('requestInfo',function(e){
+                                    var tData = JSON.parse(e.data);
+                                    shortcut_requests_list.empty();
+                                    for (var i=0; i<tData.length; i++) {
+                                        var tElm = shortcut_requests_prototype.clone().removeAttr('id').css('display', 'block');
+                                        tElm.find('.request_name').text(tData[i].first_name + ' ' + tData[i].last_name);
+                                        if(tData[i].dp) {
+                                            tElm.find('img').attr('src', base_site_url + '/api/media/' + tData[i].media + '/' + tData[i].dp + '.jpg');
+                                        } else {
+                                            tElm.find('img').attr('src', base_site_url + '/api/media/dp/default.jpg');
+                                        }
+                                        tElm.find('.request_accept').attr("id", "acp"+tData[i].id).click(function() {
+                                            friendRequest('accept', $(this).attr("id").substring(3));
+                                        });
+                                        tElm.find('.request_reject').attr("id", "rej"+tData[i].id).click(function() {
+                                            friendRequest('reject', $(this).attr("id").substring(3));
+                                        });
+                                        tElm.appendTo(shortcut_requests_list);
+                                    }
+                                },false);
+                                showShortcut('requests');
                             } else if (data.error) {
                                 toast(data.error);
                                 if (data.logout) {
@@ -136,7 +219,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             }
                         })
                         .fail(function (error) {
-                            if (error.statusCode === 0) {
+                            if (error.status === 0) {
                                 toast("Unknown error occured. Make sure you have working internet connection.");
                             } else {
                                 toast("Unknown error occured. Please contact administrator.");
@@ -197,6 +280,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
             function updateProfile() {
                 $(".full_name").text(userinfo["first_name"] + " " + userinfo["last_name"]);
+            }
+            function friendRequest(action, friendID) {
+                $.post(base_url + "/friend.php", {'action': action, 'id': friendID})
+                        .done(function (data) {
+                            if (data.success) {
+                            } else if (data.error) {
+                                toast(data.error);
+                                if (data.logout) {
+                                    loadPage('logout');
+                                }
+                            } else {
+                                toast("Unknown error occured. Please contact administrator.");
+                            }
+                        })
+                        .fail(function (error) {
+                            if (error.status === 0) {
+                                toast("Unknown error occured. Make sure you have working internet connection.");
+                            } else {
+                                toast("Unknown error occured. Please contact administrator.");
+                            }
+                        });
             }
         </script>
     </body>

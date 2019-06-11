@@ -21,47 +21,73 @@ namespace FriendsWall\Informers;
 use FriendsWall\Users\User;
 use Sse\Event;
 use Sse\SSE;
+use FriendsWall\Configs\DB;
+use PDO;
 
 /**
  * This class is used for SSE to pass user data when required.
  * 
  * To use this class, create new object and pass it in the second argument
  * of {@see \Sse\SSE} method addEventListener. after that, set the user
- * using setUser() method and use setError() if any error occures.
+ * using setUser() method and use setError() if any error occurs.
  * @author Aditya Nathwani <adityanathwani@gmail.com>
  */
-class UserInformer implements Event
+class RequestInformer implements Event
 {
 
     private $user;
     private $error;
-    private $sent = false;
+    private $request_array;
+    private $db;
     private $sse;
+    
+    public function __construct()
+    {
+        $this->db = new PDO(
+            DB::PDO_CONNECTION_STRING,
+            DB::USERNAME, DB::PASSWORD,
+            array(
+            PDO::ATTR_PERSISTENT => true,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            )
+        );
+    }
 
     public function check(): bool
     {
-        if ($this->error === null && $this->user === null) {
-            return false;
+        if ($this->user === null) {
+            $this->error = "internal error occurd";
+            return true;
         }
-        if ($this->sent) {
-            $this->sse->removeEventListener('userInfo');
-            return false;
+        try {
+            $stmt = $this->db->prepare('SELECT id, username, first_name, last_name, media, dp FROM users WHERE id IN (SELECT fromid FROM friends WHERE toid = :toid AND accepted = 0)');
+            $toid = $this->user->getId();
+            $stmt->bindParam(':toid', $toid);
+            $stmt->execute();
+            $tArray = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $tArray[] = $row;
+            }
+            if ($tArray !== $this->request_array) {
+                $this->request_array = $tArray;
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $ex) {
+            $this->error = "internal error occurd";
+            return true;
         }
-        return true;
     }
 
     public function update(): string
     {
         if ($this->error !== null) {
-            $this->sent = true;
-            return $this->error;
-        } elseif ($this->user !== null) {
-            $this->sent = true;
-            return json_encode(array(
-                'first_name' => $this->user->getFirstName(),
-                'last_name' => $this->user->getLastName(),
-                'email' => $this->user->getEmail(),
-            ));
+            return '{"error": "' . $this->error . '}';
+        } elseif ($this->request_array !== null) {
+            return json_encode($this->request_array);
+        } else {
+            return '{}';
         }
     }
     
