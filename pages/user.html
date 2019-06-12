@@ -1,0 +1,116 @@
+<div id="user_loader" style="text-align: center;" class="w3-padding">
+    <span class="fas fa-spin fa-spinner w3-large"></span><br />
+    loading
+</div>
+<div id="user_main" class="w3-padding-small w3-padding-top w3-center" style="margin: auto;display: none;">
+    <div class="w3-center" style="max-width: 100%;width: 600px;margin-left: auto;margin-right: auto;">
+        <img src="api/media/dp/default.jpg" style="height: 125px;width:125px;" class="w3-circle" alt="Profile Picture" id="user_dp" />
+    </div>
+    <div class="w3-center w3-padding-small" style="max-width: 100%;width: 600px;margin: auto;">
+        <span style="display: inline-block" class="background w3-padding-small w3-card-2 w3-margin border-bottom" id="user_full_name"></span>
+    </div>
+    <div class="background w3-padding-small border-bottom w3-card-2" style="max-width: 100%;width: 600px;margin-left: auto;margin-right: auto;display: none;word-break: break-all;" id="user_about"></div>
+    <div id="user_friendc" style="text-align: right;display: none;" class="w3-margin-top">
+        <button class="w3-button w3-blue w3-hover-blue" data-ripple="rgba(0,0,0,1)" style="display: none;" onclick="friend('send');" id="user_send"><span class="fas fa-user-plus"></span> Add friend</button>
+        <button class="w3-button w3-red w3-hover-red" data-ripple="rgba(0,0,0,1)" style="display: none;" onclick="friend('cancel');" id="user_cancel"><span class="fas fa-times"></span> Cancel Friend Request</button>
+        <button class="w3-button w3-green w3-hover-green" data-ripple="rgba(0,0,0,1)" style="display: none;" onclick="friend('accept');" id="user_accept"><span class="fas fa-check"></span> Accept</button>
+        <button class="w3-button w3-red w3-hover-red" data-ripple="rgba(0,0,0,1)" style="display: none;" onclick="friend('reject');" id="user_reject"><span class="fas fa-times"></span> Reject</button>
+        <button class="w3-button w3-red w3-hover-red" data-ripple="rgba(0,0,0,1)" style="display: none;" onclick="friend('delete');" id="user_delete"><span class="fas fa-times"></span> Unfriend</button>
+        <span class="fas fa-spin fa-spinner" style="display: none;" id="user_friend_loader"></span>
+    </div>
+    <table class="w3-table background border-bottom w3-margin-top" id="user_table"></table>
+</div>
+<script>
+    var username = window.location.hash.split("/")[1];
+    var friendID;
+    $.post(base_url + "/profile/get.php", {'username': username})
+            .done(function (data) {
+                if (data.success) {
+                    friendID = data.data.user.id;
+                    if (data.data.friend_status) {
+                        show_friend(data.data.friend_status);
+                    }
+                    if (data.data.user.dp) {
+                        $("#user_dp").attr('src', base_site_url + '/api/media/' + data.data.user.media + '/' + data.data.user.dp + '.jpg');
+                    }
+                    $("#user_full_name").text(data.data.user.first_name + ' ' + data.data.user.last_name);
+                    if (data.data.user.about) {
+                        $("#user_about").text(data.data.user.about).show();
+                    }
+                    $("#user_loader, #user_main").toggle();
+                    $("#user_table")
+                            .append('<tr class="w3-border-bottom"><th class="w3-border-right">Username</th><td>' + data.data.user.username + '</td></tr>')
+                            .append('<tr class="w3-border-bottom"><th class="w3-border-right">Email</th><td>' + data.data.user.email + '</td></tr>')
+                            .append('<tr class="w3-border-bottom"><th class="w3-border-right">Date of birth</th><td>' + (new Date(data.data.user.dob)).toLocaleDateString() + '</td></tr>')
+                            .append('<tr class="w3-border-bottom"><th class="w3-border-right">Gender</th><td>' + data.data.user.gender + '</td></tr>');
+                } else if (data.error) {
+                    toast(data.error);
+                    if (data.logout) {
+                        loadPage('logout');
+                    }
+                    loadPage("walls");
+                } else {
+                    toast("Unknown error occured. Please contact administrator.");
+                    loadPage("walls");
+                }
+            })
+            .fail(function (error) {
+                if (error.status === 0) {
+                    toast("Unknown error occured. Make sure you have working internet connection.");
+                } else {
+                    toast("Unknown error occured. Please contact administrator.");
+                }
+                loadPage("walls");
+            });
+    function friend(action) {
+        $("#user_friendc button").hide();
+        $("#user_friend_loader").show();
+        $.post(base_url + "/friend.php", {'action': action, 'id': friendID})
+                .done(function (data) {
+                    if (data.success) {
+                        if (data.data.friend_status) {
+                            show_friend(data.data.friend_status);
+                        }
+                        $("#user_friend_loader").hide();
+                    } else if (data.error) {
+                        toast(data.error);
+                        if (data.logout) {
+                            loadPage('logout');
+                        }
+                        loadPage("walls");
+                    } else {
+                        toast("Unknown error occured. Please contact administrator.");
+                        loadPage("walls");
+                    }
+                })
+                .fail(function (error) {
+                    if (error.status === 0) {
+                        toast("Unknown error occured. Make sure you have working internet connection.");
+                    } else {
+                        toast("Unknown error occured. Please contact administrator.");
+                    }
+                    loadPage("walls");
+                });
+    }
+    function show_friend(status) {
+        $("#user_friendc").show();
+        switch (status) {
+            case 1:
+                $("#user_send").show();
+                break;
+
+            case 2:
+                $("#user_cancel").show();
+                break;
+
+            case 3:
+                $("#user_accept").show();
+                $("#user_reject").show();
+                break;
+
+            case 4:
+                $("#user_delete").show();
+                break;
+        }
+    }
+</script>
