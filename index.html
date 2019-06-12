@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         <div class="w3-sidebar w3-bar-block w3-animate-right w3-collapse w3-border-left" style="display:none;right:0;" id="rightMenu">
             <div class="w3-row w3-border-top" id="notificationButtons">
-                <button id="shortcut_requests" onclick="showShortcut('requests');" class="w3-col w3-button s4 w3-hover-text-red" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-user-clock"></span></button>
+                <button id="shortcut_requests" onclick="showShortcut('requests');" class="w3-col w3-button s4 w3-hover-text-red" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-user-clock"></span><span style="position: absolute;top: 0;display: none;" class="w3-badge w3-small" id="no_requests">0</span></button>
                 <button id="shortcut_messages" onclick="showShortcut('messages');" class="w3-col w3-button s4 w3-hover-text-blue" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-comment-alt"></span></button>
                 <button id="shortcut_notifications" onclick="showShortcut('notifications');" class="w3-col w3-button s4 w3-hover-text-green" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-bell"></span></button>
             </div>
@@ -52,9 +52,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div id="shortcut_content_requests">
                     <div id="shortcut_requests_list"></div>
                     <div id="shortcut_requests_prototype" style="display: none;" class="w3-small w3-padding-small w3-border-bottom w3-cell-row">
-                        <div class="w3-cell-middle w3-cell"><img class="request_dp w3-circle w3-border" style="height: 50px;width: 50px;" alt="profile picture" /></div>
+                        <div class="w3-cell-middle w3-cell"><img class="request_dp w3-circle w3-border" style="height: 50px;width: 50px;" alt="profile picture" src="" /></div>
                         <div class="w3-cell w3-padding-small">
-                            <p class="request_name"></p>
+                            <p><a class="request_name" style="text-decoration: none;"></a></p>
                             <div class="w3-cell-row">
                                 <div class="w3-cell w3-center"><button class="w3-button w3-blue w3-hover-blue w3-tiny w3-block request_accept" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-check"></span></button></div>
                                 <div class="w3-cell s6 w3-center"><button class="w3-button w3-red w3-hover-red w3-tiny w3-block request_reject" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-times"></span></button></div>
@@ -112,6 +112,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             };
             var shortcut_requests_prototype = $("#shortcut_requests_prototype");
             var shortcut_requests_list = $("#shortcut_requests_list");
+            var no_requests = $("#no_requests");
             
             function showShortcut(shortcutName) {
                 shortcuts['requests'].removeClass("w3-red w3-hover-red").addClass("w3-hover-text-red");
@@ -193,7 +194,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     shortcut_requests_list.empty();
                                     for (var i=0; i<tData.length; i++) {
                                         var tElm = shortcut_requests_prototype.clone().removeAttr('id').css('display', 'block');
-                                        tElm.find('.request_name').text(tData[i].first_name + ' ' + tData[i].last_name);
+                                        tElm.find('.request_name').attr('href', '#user/'+tData[i].username).text(tData[i].first_name + ' ' + tData[i].last_name);
                                         if(tData[i].dp) {
                                             tElm.find('img').attr('src', base_site_url + '/api/media/' + tData[i].media + '/' + tData[i].dp + '.jpg');
                                         } else {
@@ -206,6 +207,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             friendRequest('reject', $(this).attr("id").substring(3));
                                         });
                                         tElm.appendTo(shortcut_requests_list);
+                                    }
+                                    no_requests.text(tData.length);
+                                    if (tData.length) {
+                                        no_requests.show();
+                                    } else {
+                                        no_requests.hide();
                                     }
                                 },false);
                                 showShortcut('requests');

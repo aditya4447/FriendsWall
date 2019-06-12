@@ -60,7 +60,7 @@ class RequestInformer implements Event
             return true;
         }
         try {
-            $stmt = $this->db->prepare('SELECT id, username, first_name, last_name, media, dp FROM users WHERE id IN (SELECT fromid FROM friends WHERE toid = :toid AND accepted = 0)');
+            $stmt = $this->db->prepare('SELECT users.id, users.username, users.first_name, users.last_name, users.media, users.dp FROM users INNER JOIN friends ON friends.toid = :toid AND users.id = friends.fromid AND friends.accepted=0 ORDER BY friends.time DESC');
             $toid = $this->user->getId();
             $stmt->bindParam(':toid', $toid);
             $stmt->execute();
