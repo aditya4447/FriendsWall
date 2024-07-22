@@ -35,11 +35,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div class="w3-sidebar w3-bar-block w3-animate-left w3-collapse w3-border-right background-light" style="display:none;" id="leftMenu">
             <div class="w3-center w3-border-top w3-padding"><img src="api/media/dp/default.jpg" height="125" width="125" alt="Profile Picture" class="dp w3-circle w3-border" /></div>
             <a class="w3-bar-item w3-button w3-border-bottom w3-center full_name" href="#profile" id="itemprofile">Profile</a>
-            <a class="w3-bar-item w3-button" href="#walls" id="itemwalls">Walls</a>
-            <a class="w3-bar-item w3-button" href="#messages" id="itemmessages">Messages</a>
-            <a class="w3-bar-item w3-button" href="#groups" id="itemgroups">Groups</a>
-            <a class="w3-bar-item w3-button" href="#search" id="itemsearch">Search</a>
-            <a class="w3-bar-item w3-button" href="#logout" id="itemlogout">Logout</a>
+            <a class="w3-bar-item w3-button" href="#walls" id="itemwalls"><span class="fas fa-newspaper"></span> Walls</a>
+            <a class="w3-bar-item w3-button" href="#messages" id="itemmessages"><span class="fas fa-envelope"></span> Messages</a>
+            <a class="w3-bar-item w3-button" href="#groups" id="itemgroups"><span class="fas fa-users"></span> Groups</a>
+            <a class="w3-bar-item w3-button" href="#search" id="itemsearch"><span class="fas fa-search"></span> Search</a>
+            <a class="w3-bar-item w3-button" href="#logout" id="itemlogout"><span class="fas fa-sign-out-alt"></span> Logout</a>
         </div>
 
         <div class="w3-sidebar w3-bar-block w3-animate-right w3-collapse w3-border-left" style="display:none;right:0;" id="rightMenu">
@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div id="shortcut_requests_prototype" style="display: none;" class="w3-small w3-padding-small w3-border-bottom w3-cell-row">
                         <div class="w3-cell-middle w3-cell"><img class="request_dp w3-circle w3-border" style="height: 50px;width: 50px;" alt="profile picture" src="" /></div>
                         <div class="w3-cell w3-padding-small">
-                            <p><a class="request_name" style="text-decoration: none;"></a></p>
+                            <p><a class="request_name link"></a></p>
                             <div class="w3-cell-row">
                                 <div class="w3-cell w3-center"><button class="w3-button w3-blue w3-hover-blue w3-tiny w3-block request_accept" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-check"></span></button></div>
                                 <div class="w3-cell s6 w3-center"><button class="w3-button w3-red w3-hover-red w3-tiny w3-block request_reject" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-times"></span></button></div>
@@ -136,8 +136,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         shortcutsc['notifications'].show();
                         shortcuts['notifications'].addClass("w3-green w3-hover-green").removeClass("w3-hover-text-green");
                         break;
-
-                    default:
 
                         break;
                 }
@@ -277,6 +275,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     }
                     $(content).children("#pageloader").hide();
                 }).attr("id", "page" + page).appendTo(content);
+            }
+            function reloadPage(fullPage) {
+                var page = fullPage.split('/')[0];
+                loadPage('loader');
+                $("#page"+page).remove();
+                loadedPages[page] = false;
+                loadPage(fullPage);
             }
             function updateDP() {
                 if(userinfo['dp']) {

@@ -54,6 +54,14 @@
     background-color: rgba(239, 239, 234, 1) !important;
 }
 
+.link {
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
 /* MAD-RIPPLE EFFECT */
 .ripple{
     position: absolute;

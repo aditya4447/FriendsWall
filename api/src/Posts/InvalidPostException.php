@@ -15,16 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace FriendsWall\Users;
+namespace FriendsWall\Posts;
 
 /**
- * This Exception ts thrown when trying to set invalid
- * value for user property.
- * 
+ * InvalidPostException is thrown when error occurs during
+ * various operations of Post class
+ *
  * @author Aditya Nathwani <adityanathwani@gmail.com>
- * @package FriendsWall\Users
  */
-class InvalidUserAttributeException extends \Exception
+class InvalidPostException extends \Exception
 {
     
 }

@@ -1,1 +1,58 @@
-<div class="w3-padding w3-margin w3-pale-red w3-center">Hello, This is wall.</div>
+<div class="w3-card-2 border-bottom" style="margin: 8px;">
+    <div class="w3-container w3-black"><h3>Add post</h3></div>
+    <form class="w3-padding-small border-bottom background" onsubmit="add_post(event);" id="walls_add_post_form">
+        <textarea class="w3-input" id="walls_post_text" placeholder="What's happening?" style="max-width: 100%;"></textarea>
+        <div style="text-align: right;margin-top: 4px;">
+            <input type="file" name="file" id="walls_file" style="display: none;" onchange="update_file_name();" />
+            <button type="button" class="w3-button w3-transparent w3-hover-none" style="display: none;cursor: default;" id="walls_post_file_name"></button>
+            <button type="button" class="w3-button w3-transparent w3-hover-none" data-ripple="rgba(0,0,0,1)" onclick="$('#walls_file').click();"><span class="fas fa-image"></span></button>
+            <button type="submit" class="w3-button w3-blue w3-hover-blue" data-ripple="rgba(0,0,0,1)" id="walls_post_submit">Post</button>
+            <button type="button" class="w3-button w3-transparent w3-hover-none" style="display: none;cursor: default;" id="walls_post_loader"><span class="fas fa-spinner fa-spin"></span></button>
+        </div>
+    </form>
+</div>
+<script>
+    function add_post(event) {
+        event.preventDefault();
+        toast('Posting...', 1500);
+        $("#walls_post_loader").show();
+        $("#walls_post_submit").hide();
+        var fd = new FormData();
+        if (document.getElementById('walls_file').files[0]) {
+            fd.append('file', document.getElementById('walls_file').files[0]);
+        }
+        fd.append('text', document.getElementById('walls_post_text').value);
+        $.ajax({
+            url: base_url + '/post/add.php',
+            type: 'POST',
+            data: fd,
+            success: function(data){
+                if (data.success) {
+                    toast("post added", 2000);
+                    reloadPage('walls');
+                } else if(data.logout) {
+                    loadPage('logout');
+                } else if (data.error) {
+                    toast(data.error, 2000);
+                    $("#walls_post_loader").hide();
+                    $("#walls_post_submit").show();
+                } else {
+                    toast('Unknown error occured');
+                    $("#walls_post_loader").hide();
+                    $("#walls_post_submit").show();
+                }
+            },
+            fail: function() {
+                toast('Unknown error occured');
+                $("#walls_post_loader").hide();
+                $("#walls_post_submit").show();
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    }
+    function update_file_name() {
+    $("#walls_post_file_name").text(document.getElementById('walls_file').files[0].name).show();
+}
+</script>
