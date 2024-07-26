@@ -35,7 +35,7 @@ class Search
      * @param int $page page number of result
      * @return array
      */
-    public static function search(string $str, int $page = 1): array
+    public static function search(string $str, int $page = 1, $isAdmin = false): array
     {
         $result = [];
         $dbh = new PDO(
@@ -51,10 +51,13 @@ class Search
         }
         $page--;
         $limit = $page * 10;
-        $q = $dbh->prepare("SELECT first_name, last_name, username, media, dp FROM users WHERE CONCAT(first_name, ' ', last_name) LIKE :keyword OR CONCAT(last_name, ' ', first_name) LIKE :keyword OR first_name LIKE :keyword OR last_name LIKE :keyword OR username LIKE :keyword LIMIT $limit,10;");
+        $q = $dbh->prepare("SELECT id, first_name, last_name, username, media, dp, isactive  FROM users WHERE CONCAT(first_name, ' ', last_name) LIKE :keyword OR CONCAT(last_name, ' ', first_name) LIKE :keyword OR first_name LIKE :keyword OR last_name LIKE :keyword OR username LIKE :keyword LIMIT $limit,10;");
         $q->bindValue(':keyword', '%' . $str . '%');
         $q->execute();
         while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
+            if (!$isAdmin) {
+                unset($row['isactive']);
+            }
             $result[] = $row;
         }
         return $result;

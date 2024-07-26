@@ -32,7 +32,7 @@ class DB
     /** Password for database connection. */
     public const PASSWORD = "";
     /** Database name for database connection. */
-    public const DB_NAME = "friends_wall";
+    public const DB_NAME = "friends_wall_2";
     /** PDO connection string */
     public const PDO_CONNECTION_STRING = 'mysql:host=' . DB::HOST . ';dbname=' . DB::DB_NAME;
 

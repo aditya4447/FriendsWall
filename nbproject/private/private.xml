@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>js/test.json</url>
+            <bookmark id="1">
+                <name/>
+                <line>0</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/extra/FriendsWall/js/custom.js</file>
-            <file>file:/D:/extra/FriendsWall/pages/user.html</file>
-            <file>file:/D:/extra/FriendsWall/pages/profile.html</file>
-            <file>file:/D:/extra/FriendsWall/pages/search.html</file>
-            <file>file:/D:/extra/FriendsWall/index.html</file>
+            <file>file:/C:/extra/FriendsWall/feedback.html</file>
+            <file>file:/C:/extra/FriendsWall/index.html</file>
+            <file>file:/C:/extra/FriendsWall/api/v1/user/create.php</file>
+            <file>file:/C:/extra/FriendsWall/api/src/Users/User.php</file>
+            <file>file:/C:/extra/FriendsWall/api/src/Groups/Groups.php</file>
+            <file>file:/C:/extra/FriendsWall/login.html</file>
+            <file>file:/C:/extra/FriendsWall/api/src/Configs/DB.php</file>
+            <file>file:/C:/extra/FriendsWall/api/v1/like/toggle_like.php</file>
+            <file>file:/C:/extra/FriendsWall/api/src/Feedback.php</file>
+            <file>file:/C:/extra/FriendsWall/css/custom.css</file>
+            <file>file:/C:/extra/FriendsWall/api/src/Likes/Like.php</file>
+            <file>file:/C:/extra/FriendsWall/api/v1/help/feedback.php</file>
+            <file>file:/C:/extra/FriendsWall/api/v1/admin/get_feedbacks.php</file>
+            <file>file:/C:/extra/FriendsWall/pages/messages.html</file>
+            <file>file:/C:/extra/FriendsWall/pages/groups.html</file>
+            <file>file:/C:/extra/FriendsWall/pages/feedbacks.html</file>
+            <file>file:/C:/extra/FriendsWall/api/v1/admin/delete_feedback.php</file>
+            <file>file:/C:/extra/FriendsWall/api/v1/admin/search.php</file>
         </group>
     </open-files>
 </project-private>

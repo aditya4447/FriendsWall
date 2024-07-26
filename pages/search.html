@@ -36,6 +36,8 @@
                                     search_result.html('<div class="w3-red w3-center w3-padding">No result found</div>');
                                 }
                                 search_load_more.hide();
+                            } else if(data.data.result.length < 10) {
+                                search_load_more.hide();
                             } else {
                                 search_load_more.show();
                             }

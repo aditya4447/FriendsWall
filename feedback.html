@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2019 Aditya Nathwani <adityanathwani@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>feedback - Friends' Wall Social Network</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+        <meta name="theme-color" content="#000000" />
+        <link rel="icon" href="img/favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="css/w3.css" />
+        <link rel="stylesheet" type="text/css" href="css/custom.css" />
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+    </head>
+    <body style="background-image: url('img/bg.jpg');background-attachment: fixed;background-size: cover;">
+        <h1 style="text-align: center">Friends' Wall</h1>
+        <p style="text-align: center">A great place to connect with friends</p>
+        <div class="w3-card-2 w3-animate-left" style="width: 400px;max-width: 100%;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;z-index: 2;margin: auto;margin-top: 8px;" id="feedbackc">
+            <div class="w3-container w3-black"><h3>Feedback</h3></div>
+            <form class="w3-padding-small" style="border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;opacity: 0.7;background-color: white;" onsubmit="feedback(event);" id="feedbackform">
+                <div class="w3-row w3-section">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fa fa-user"></i></div>
+                    <div class="w3-rest">
+                        <input type="text" class="w3-input" placeholder="Full Name" name="name" required />
+                    </div>
+                </div>
+                <div class="w3-row w3-section">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fa fa-at"></i></div>
+                    <div class="w3-rest">
+                        <input type="email" class="w3-input" placeholder="Email" name="email" required />
+                    </div>
+                </div>
+                <div class="w3-row w3-section">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fa fa-edit"></i></div>
+                    <div class="w3-rest">
+                        <textarea class="w3-input" placeholder="Write feedback" name="description" required></textarea>
+                    </div>
+                </div>
+                <div style="display: none;" class="w3-row" id="feedbackerrorc">
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge w3-text-red fas fa-exclamation-triangle"></i></div>
+                    <div class="w3-rest w3-padding w3-red" id="feedbackerror"></div>
+                </div>
+                <button type="submit" class="w3-button w3-block w3-light-blue w3-hover-shadow w3-hover-light-blue" data-ripple="rgba(255, 255, 255, 1)" id="feedbackbutton"><span class="fas fa-check"></span> Submit</button><button type="button" class="w3-button w3-block w3-transparent w3-hover-none" style="display: none;cursor: default;" id="feedbackloader"><span class="fas fa-spinner fa-spin"></span></button>
+            </form>
+        </div>
+
+        <div class="toast w3-card w3-animate-bottom" style="position: fixed;font-size: 1.2em;display: none;height: 2.5em;line-height: 2.5em;background-color: #323232;color: #d1d1d1;opacity: .9;top: 2%;right: 45%;padding-left: 8px;padding-right: 8px;z-index: 999;"></div>
+
+        <script type="text/javascript" src="js/fontawesome-all.min.js"></script>
+        <script type="text/javascript" src="js/custom.js"></script>
+        <script>
+            function feedback(event) {
+                event.preventDefault();
+                toast('submitting...', 1500);
+                $("#feedbackbutton").hide();
+                $("#feedbackloader").show();
+                $.post(base_url + '/help/feedback.php', $("#feedbackform").serialize())
+                        .done(function (data) {
+                            if (data.success) {
+                                toast("Feedback submitted successfully...");
+                                setTimeout(function(){
+                                    window.location.href = "index.html";
+                                }, 3000);
+                            } else if (data.error) {
+                                $("#feedbackerror").html(data.error);
+                                $("#feedbackerrorc").show();
+                            } else {
+                                $("#feedbackerror").html("Unknown error occured. Please contact administrator.");
+                                $("#feedbackerrorc").show();
+                            }
+                        })
+                        .fail(function (error) {
+                            if (error.status === 0) {
+                                $("#feedbackerror").html("Unknown error occured. Make sure you have working internet connection.");
+                            } else {
+                                $("#feedbackerror").html("Unknown error occured. Please contact administrator.");
+                            }
+                            $("#feedbackerrorc").show();
+                        })
+                        .always(function () {
+                            $("#feedbackbutton").show();
+                            $("#feedbackloader").hide();
+                        });
+            }
+
+        </script>
+    </body>
+</html>

@@ -29,8 +29,8 @@
         <div class="w3-row w3-section">
             <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fas fa-venus"></i></div>
             <div class="w3-rest w3-row-padding">
-                <div class="w3-col s6"><button type="button" class="w3-button w3-block w3-black w3-hover-black" onclick="$('#edit_profile_female').addClass('w3-transparent w3-hover-none').removeClass('w3-black w3-hover-black');$(this).removeClass('w3-transparent w3-hover-none').addClass('w3-black w3-hover-black');$('#edit_profile_gender').val('male');" data-ripple="rgba(0, 0, 0, 1)" id="edit_profile_male">Male</button></div>
-                <div class="w3-col s6"><button type="button" class="w3-button w3-block w3-transparent w3-hover-none" onclick="$('#edit_profile_male').addClass('w3-transparent w3-hover-none').removeClass('w3-black w3-hover-black');$(this).removeClass('w3-transparent w3-hover-none').addClass('w3-black w3-hover-black');$('#edit_profile_gender').val('female');" data-ripple="rgba(0, 0, 0, 1)" id="edit_profile_female">Female</button></div>
+                <div class="w3-col s6"><button type="button" class="w3-button w3-block w3-black w3-hover-black" onclick="$('#edit_profile_female').addClass('w3-transparent w3-hover-none').removeClass('w3-black w3-hover-black');$(this).removeClass('w3-transparent w3-hover-none').addClass('w3-black w3-hover-black');$('#edit_profile_gender').val('male');" data-ripple="rgba(0, 0, 0, 1)" id="edit_profile_male"><span class="fas fa-male"></span> Male</button></div>
+                <div class="w3-col s6"><button type="button" class="w3-button w3-block w3-transparent w3-hover-none" onclick="$('#edit_profile_male').addClass('w3-transparent w3-hover-none').removeClass('w3-black w3-hover-black');$(this).removeClass('w3-transparent w3-hover-none').addClass('w3-black w3-hover-black');$('#edit_profile_gender').val('female');" data-ripple="rgba(0, 0, 0, 1)" id="edit_profile_female"><span class="fas fa-female"></span> Female</button></div>
                 <input type="hidden" name="gender" id="edit_profile_gender" value="male" />
             </div>
         </div>
@@ -55,6 +55,7 @@
         </div>
     </form>
 </div>
+<p style="text-align: center"><a href="javascript:void(0)" onclick="loadTmpPage('change_password');">Change Password</a></p>
 <script>
     $.post(base_url + "/profile/get.php")
             .done(function (data) {

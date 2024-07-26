@@ -42,12 +42,20 @@ try {
     $user = new User();
     $user->setId($_SESSION['id'], true);
     session_write_close();
+    if (!$user->isActive()) {
+        $success = false;
+        $output["logout"] = true;
+        $error = 'Your account is suspended. Please contact administrator.';
+        goto output;
+    }
     $data["user"] = [
+        'id' => $user->getId(),
         'first_name' => $user->getFirstName(),
         'last_name' => $user->getLastName(),
         'username' => $user->getUsername(),
         'media' => $user->getMedia(),
-        'dp' => $user->getDP()
+        'dp' => $user->getDP(),
+        'isadmin' => $user->isAdmin(),
     ];
 } catch (InvalidUserAttributeException $exc) {
     $success = false;

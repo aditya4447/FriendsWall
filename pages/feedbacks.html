@@ -1,0 +1,70 @@
+<div style="text-align: right" class="w3-padding-small"><button class="w3-button w3-black w3-hover-black" data-ripple="rgba(255,255,255,1)" onclick="toast('Refreshing...', 2000);feedbacks_page=1;feedbacks_load();" style="margin-right: 0px !important;"><span class="fa fa-sync"></span> Refresh</button></div>
+<div id="feedbacks_result" style="padding-left:8px;padding-right:8px;padding-bottom: 8px;"></div>
+<div id="feedbacks_load_more" style="margin:8px;cursor: pointer;display: none;" data-ripple="rgba(0,0,0,1)" class="background w3-padding-small w3-center w3-card-2 border-bottom" onclick="feedbacks_page++;feedbacks_load(true);">load more feedbacks</div>
+<script>
+    if (userinfo && !userinfo['isadmin']) {
+        toast("Access denied");
+        loadPage('walls');
+    }
+    var feedbacks_result = $("#feedbacks_result");
+    var feedbacks_load_more = $("#feedbacks_load_more");
+    var feedbacks_page = 1;
+    function feedbacks_load(load_more) {
+        $.post(base_url + "/admin/get_feedbacks.php", {'page': feedbacks_page})
+                .done(function (data) {
+                    if (data.success) {
+                        if (!load_more) {
+                            feedbacks_result.empty();
+                        }
+                        for (var i=0; i<data.data.feedbacks.length; i++) {
+                            feedbacks_result.append('<div style="padding-top:8px;" class="single_feedback"><div class="border-bottom w3-card-2 w3-block background" style="text-decoration:none;padding:8px;"><button class="w3-button w3-red w3-hover-red w3-right" data-ripple="rgba(0,0,0,1)" onclick="feedbacks_delete('+data.data.feedbacks[i].id+');$(this).parents(\'.single_feedback\').remove();"><span class="fas fa-trash"></span> Delete</button><strong>'+data.data.feedbacks[i].name+'</strong> <small><a href="mailto:'+data.data.feedbacks[i].email+'">'+data.data.feedbacks[i].email+'</a></small><br />'+data.data.feedbacks[i].description+'</div></div>');
+                        }
+                        if(data.data.feedbacks.length === 0) {
+                            if (load_more) {
+                                toast("no more feedbacks found");
+                            } else {
+                                feedbacks_result.html('<div class="w3-red w3-center w3-padding">No feedbacks</div>');
+                            }
+                            feedbacks_load_more.hide();
+                        } else if(data.data.feedbacks.length < 20) {
+                            feedbacks_load_more.hide();
+                        } else {
+                            feedbacks_load_more.show();
+                        }
+                    } else if (data.error) {
+                        toast(data.error);
+                        if (data.logout) {
+                            loadPage('logout');
+                        }
+                    } else {
+                        toast("Unknown error occured. Please contact administrator.");
+                    }
+                })
+                .fail(function (error) {
+                    if (error.status !== 0) {
+                        toast("Unknown error occured. Please contact administrator.");
+                    }
+                });
+    }
+    function feedbacks_delete(id) {
+        $.post(base_url + "/admin/delete_feedback.php", {'id': id})
+                .done(function (data) {
+                    if (data.success) {
+                        
+                    } else if (data.error) {
+                        toast(data.error);
+                        if (data.logout) {
+                            loadPage('logout');
+                        }
+                    } else {
+                        toast("Unknown error occured. Please contact administrator.");
+                    }
+                })
+                .fail(function (error) {
+                    if (error.status !== 0) {
+                        toast("Unknown error occured. Please contact administrator.");
+                    }
+                });
+    }
+    feedbacks_load();
+</script>

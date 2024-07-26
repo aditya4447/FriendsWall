@@ -44,6 +44,11 @@ try {
         $error = 'Email and password does not match.';
         goto output;
     }
+    if (!$user->isActive()) {
+        $success = false;
+        $error = 'Your account is suspended. Please contact administrator.';
+        goto output;
+    }
     session_start();
     $_SESSION['id'] = $user->getId();
     if (isset($_POST['get_sid'])) {

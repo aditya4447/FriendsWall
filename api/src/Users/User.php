@@ -264,7 +264,7 @@ class User
      */
     public function setFirstName(string $firstName): User
     {
-        if (!preg_match("/^[ a-zA-Z0-9'-]{5,255}$/", $firstName)) {
+        if (!preg_match("/^[ a-zA-Z0-9'-]{1,255}$/", $firstName)) {
             throw new InvalidUserAttributeException('First Name invalid');
         }
         $this->firstName = $firstName;
@@ -290,7 +290,7 @@ class User
      */
     public function setLastName(string $lastName): User
     {
-        if (!preg_match("/^[ a-zA-Z0-9'-]{5,255}$/", $lastName)) {
+        if (!preg_match("/^[ a-zA-Z0-9'-]{1,255}$/", $lastName)) {
             throw new InvalidUserAttributeException('Last Name invalid');
         }
         $this->lastName = $lastName;
@@ -382,7 +382,7 @@ class User
             $this->password = $password;
         } else {
             if (strlen($password) < 8) {
-                throw new InvalidUserAttributeException('Password must contain atleast 8 caracters');
+                throw new InvalidUserAttributeException('Password must contain atleast 8 characters');
             }
             $this->password = password_hash($password, PASSWORD_BCRYPT);
         }
@@ -468,6 +468,88 @@ class User
     public function getAbout(): string
     {
         return $this->about;
+    }
+    
+    
+    /**
+     * Returns true if the user admin
+     * 
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        $stmt = $this->db->prepare('SELECT * FROM admins WHERE id = :id');
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Returns true if the user is active
+     * 
+     * @return bool
+     */
+    
+    public function isActive(): bool
+    {
+        $stmt = $this->db->prepare('SELECT isactive FROM users WHERE id = :id');
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (intval($row['isactive']) === 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * suspends the user account
+     * 
+     * @return \FriendsWall\Users\User
+     */
+    public function suspend(): User
+    {
+        $stmt = $this->db->prepare('UPDATE users SET isactive=0 WHERE id = :id');
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+        return $this;
+    }
+    
+    /**
+     * reactivates the user account
+     * 
+     * @return \FriendsWall\Users\User
+     */
+    public function reactivate(): User
+    {
+        $stmt = $this->db->prepare('UPDATE users SET isactive=1 WHERE id = :id');
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+        return $this;
+    }
+    
+    /**
+     * Returns true if the user is friend with another user
+     * 
+     * @param int $id another user's id to check friendship
+     * @return bool
+     */
+    public function isFriendWith(int $id): bool
+    {
+        $stmt = $this->db->prepare("SELECT * FROM friends WHERE ((toid = :toid AND fromid = :fromid) OR (toid = :fromid AND fromid = :toid)) AND accepted = 1");
+        $stmt->bindParam(':toid', $this->id);
+        $stmt->bindParam(':fromid', $id);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            return true;
+        }
+        return false;
     }
 
     /**

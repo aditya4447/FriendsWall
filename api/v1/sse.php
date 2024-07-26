@@ -18,11 +18,15 @@
 include '../vendor/autoload.php';
 
 use FriendsWall\Informers\RequestInformer;
+use FriendsWall\Informers\MessagesInformer;
+use FriendsWall\Informers\NotificationInformer;
 use FriendsWall\Users\InvalidUserAttributeException;
 use FriendsWall\Users\User;
 use Sse\SSE;
 
 $requestInformer = new RequestInformer();
+$messagesInformer = new MessagesInformer();
+$notificationInformer = new NotificationInformer();
 $sse = new SSE();
 
 if (isset($_POST['sid'])) {
@@ -31,6 +35,8 @@ if (isset($_POST['sid'])) {
 session_start();
 if (!isset($_SESSION['id'])) {
     $requestInformer->setError('No user logged in. Please login to continue');
+    $messagesInformer->setError('No user logged in. Please login to continue');
+    $notificationInformer->setError('No user logged in. Please login to continue');
 } else {
     try {
         $user = new User();
@@ -38,12 +44,22 @@ if (!isset($_SESSION['id'])) {
         session_write_close();
         $requestInformer->setUser($user);
         $requestInformer->setSSE($sse);
+        $messagesInformer->setUser($user);
+        $messagesInformer->setSSE($sse);
+        $notificationInformer->setUser($user);
+        $notificationInformer->setSSE($sse);
     } catch (InvalidUserAttributeException $exc) {
         $requestInformer->setError($exc->getMessage());
+        $messagesInformer->setError($exc->getMessage());
+        $notificationInformer->setError($exc->getMessage());
     } catch (Exception $exc) {
         $requestInformer->setError(FriendsWall\Configs\Strings::UNKNOWN_ERROR);
+        $messagesInformer->setError(FriendsWall\Configs\Strings::UNKNOWN_ERROR);
+        $notificationInformer->setError(FriendsWall\Configs\Strings::UNKNOWN_ERROR);
     }
 }
 
 $sse->addEventListener('requestInfo', $requestInformer);
+$sse->addEventListener('messagesInfo', $messagesInformer);
+$sse->addEventListener('notificationInfo', $notificationInformer);
 $sse->start();

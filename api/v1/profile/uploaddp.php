@@ -163,7 +163,7 @@ if(isset($_FILES['file']))
             goto output;
         } catch (Exception $exc) {
             $success = false;
-            $error = FriendsWall\Configs\Strings::UNKNOWN_ERROR.$exc->getMessage();
+            $error = FriendsWall\Configs\Strings::UNKNOWN_ERROR;
             goto output;
         }
     } else {

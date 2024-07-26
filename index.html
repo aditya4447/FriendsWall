@@ -26,27 +26,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <title>Home - Friends' Wall Social Network</title>
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
         <meta name="theme-color" content="#000000" />
+        <link rel="icon" href="img/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="css/w3.css" />
         <link rel="stylesheet" type="text/css" href="css/custom.css" />
         <script type="text/javascript" src="js/jquery.min.js"></script>
     </head>
     <body style="background-image: url('img/bg.jpg');background-attachment: fixed;background-size: cover;">
-
         <div class="w3-sidebar w3-bar-block w3-animate-left w3-collapse w3-border-right background-light" style="display:none;" id="leftMenu">
+            <img src="img/logo.png" style="width: 100%;" alt="logo" />
             <div class="w3-center w3-border-top w3-padding"><img src="api/media/dp/default.jpg" height="125" width="125" alt="Profile Picture" class="dp w3-circle w3-border" /></div>
             <a class="w3-bar-item w3-button w3-border-bottom w3-center full_name" href="#profile" id="itemprofile">Profile</a>
             <a class="w3-bar-item w3-button" href="#walls" id="itemwalls"><span class="fas fa-newspaper"></span> Walls</a>
+            <a class="w3-bar-item w3-button" href="#friends" id="itemfriends"><span class="fas fa-user-friends"></span> Friends</a>
             <a class="w3-bar-item w3-button" href="#messages" id="itemmessages"><span class="fas fa-envelope"></span> Messages</a>
             <a class="w3-bar-item w3-button" href="#groups" id="itemgroups"><span class="fas fa-users"></span> Groups</a>
             <a class="w3-bar-item w3-button" href="#search" id="itemsearch"><span class="fas fa-search"></span> Search</a>
             <a class="w3-bar-item w3-button" href="#logout" id="itemlogout"><span class="fas fa-sign-out-alt"></span> Logout</a>
+            <a href="feedback.html" class="w3-text-grey w3-small w3-margin-left">Send feedback</a>
         </div>
 
         <div class="w3-sidebar w3-bar-block w3-animate-right w3-collapse w3-border-left" style="display:none;right:0;" id="rightMenu">
             <div class="w3-row w3-border-top" id="notificationButtons">
                 <button id="shortcut_requests" onclick="showShortcut('requests');" class="w3-col w3-button s4 w3-hover-text-red" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-user-clock"></span><span style="position: absolute;top: 0;display: none;" class="w3-badge w3-small" id="no_requests">0</span></button>
-                <button id="shortcut_messages" onclick="showShortcut('messages');" class="w3-col w3-button s4 w3-hover-text-blue" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-comment-alt"></span></button>
-                <button id="shortcut_notifications" onclick="showShortcut('notifications');" class="w3-col w3-button s4 w3-hover-text-green" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-bell"></span></button>
+                <button id="shortcut_messages" onclick="showShortcut('messages');" class="w3-col w3-button s4 w3-hover-text-blue" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-comment-alt"></span><span style="position: absolute;top: 0;display: none;" class="w3-badge w3-small" id="no_messages">0</span></button>
+                <button id="shortcut_notifications" onclick="showShortcut('notifications');read_notifications();" class="w3-col w3-button s4 w3-hover-text-green" data-ripple="rgba(0, 0, 0, 1)"><span class="fas fa-bell"></span><span style="position: absolute;top: 0;display: none;" class="w3-badge w3-small" id="no_notifications">0</span></button>
             </div>
             <div id="shortcutc_requests" style="display:none;"><small class="w3-text-grey">Requests</small>
                 <div id="shortcut_content_requests">
@@ -64,10 +67,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </div>
             <div id="shortcutc_messages" style="display:none;"><small class="w3-text-grey">Messages</small>
-                <div id="shortcut_content_messages"></div>
+                <div id="shortcut_content_messages">
+                    <div id="shortcut_messages_list"></div>
+                    <div id="shortcut_messages_prototype" data-ripple="rgba(0,0,0,1)" class="w3-small w3-padding-small w3-border-bottom" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;display: none;">
+                        <img alt="profile picture" src="" class="w3-circle w3-border w3-left messages_dp" style="display:inline-block;margin-right:8px;margin-bottom: 0;" width="50" height="50"><a class="messages_name link"></a><br class="" /><span class="messages_text"></span>
+                        <div class="w3-right messages_time w3-tiny"></div>
+                    </div>
+                </div>
             </div>
             <div id="shortcutc_notifications" style="display:none;"><small class="w3-text-grey">Notifications</small>
-                <div id="shortcut_content_notifications"></div>
+                <div id="shortcut_content_notifications">
+                    <div id="shortcut_notifications_list"></div>
+                </div>
             </div>
         </div>
 
@@ -78,15 +89,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <div class="w3-cell w3-cell-middle w3-xlarge" style="text-align: center;text-transform: capitalize;" id="heading">Friends' Wall</div>
                 <div class="w3-cell w3-hide-large" style="text-align: right">
-                    <button onclick="toggleMenu('right');" class="w3-button w3-large w3-hover-none" data-ripple="rgba(0, 0, 0, 1)" style="border-bottom-left-radius: 0;border-bottom-right-radius: 0;"><span class="fas fa-bell">&nbsp;</span></button>
+                    <button onclick="toggleMenu('right');" class="w3-button w3-large w3-hover-none" data-ripple="rgba(0, 0, 0, 1)" style="border-bottom-left-radius: 0;border-bottom-right-radius: 0;"><span class="fas fa-bell">&nbsp;</span></button><span style="position: absolute;top: 0;right: 0;display: none;" class="w3-badge w3-small w3-red" id="no_all">0</span>
                 </div>
             </div>
         </div>
         <div class="w3-main" style="margin-left:200px;margin-right:200px;min-height: 80vh;" id="content">
             <div id="pageloader" class="w3-center w3-margin-top"><span class="fas fa-spinner fa-spin w3-xlarge"></span><br>Loading</div>
         </div>
+        
+        <div id="size" style="display: none;position: fixed;top: 0;left: 0;height: 100%;width: 100%;"></div>
 
         <div class="toast w3-card w3-animate-bottom" style="position: fixed;font-size: 1.2em;display: none;height: 2.5em;line-height: 2.5em;background-color: #323232;color: #d1d1d1;opacity: .9;top: 2%;right: 45%;padding-left: 8px;padding-right: 8px;z-index: 999;"></div>
+
+        <div class="window" style="display: none;" id="window">
+            <div class="window-content">
+                <div class="w3-bar w3-border-bottom window-header">
+                    <div class="w3-left w3-container">
+                        <p class="window-title" style="font-weight: bold;"></p>
+                    </div>
+                    <div class="w3-right">
+                        <button onclick="$(this).parents('.window').remove();" class="w3-button w3-transparent w3-hover-none" data-ripple="rgba(0,0,0,1)"><span class="fas fa-times"></span></button>
+                    </div>  
+                </div>
+                <div class="window-main w3-padding-small"><div class="w3-center"><span class="fas fa-spin fa-spinner w3-xlarge"></span><br />Loading</div></div>
+            </div>
+        </div>
 
         <script type="text/javascript" src="js/fontawesome-all.min.js"></script>
         <script type="text/javascript" src="js/custom.js"></script>
@@ -94,12 +121,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             var menu = {'left': $('#leftMenu'), 'right': $('#rightMenu')};
             var content = $("#content");
             var heading = $("#heading");
+            var size = $("#size");
+            var store = {};
             var loadedPages = {};
             loadedPages["loader"] = true;
             var leftMenuButtons = $('#leftMenu a');
             var userinfo;
             var titlePrefix = " - Friends' Wall Social Network";
             var title = $("title");
+            var windowDiv = $("#window");
             var shortcuts = {
                 'requests': $("#shortcut_requests"),
                 'messages': $("#shortcut_messages"),
@@ -113,6 +143,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             var shortcut_requests_prototype = $("#shortcut_requests_prototype");
             var shortcut_requests_list = $("#shortcut_requests_list");
             var no_requests = $("#no_requests");
+            var shortcut_messages_prototype = $("#shortcut_messages_prototype");
+            var shortcut_messages_list = $("#shortcut_messages_list");
+            var no_messages = $("#no_messages");
+            var shortcut_notifications_prototype = $("#shortcut_notifications_prototype");
+            var shortcut_notifications_list = $("#shortcut_notifications_list");
+            var no_notifications = $("#no_notifications");
+            
+            var no_all = $("#no_all");
+            
+            var current_notifications = [];
             
             function showShortcut(shortcutName) {
                 shortcuts['requests'].removeClass("w3-red w3-hover-red").addClass("w3-hover-text-red");
@@ -135,8 +175,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     case 'notifications':
                         shortcutsc['notifications'].show();
                         shortcuts['notifications'].addClass("w3-green w3-hover-green").removeClass("w3-hover-text-green");
-                        break;
-
                         break;
                 }
             }
@@ -162,17 +200,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             $(function () {
                 var mainHeight = $('#main').height();
                 $('.w3-sidebar').css('margin-top', mainHeight).css('padding-top', mainHeight);
+                menu['left'].css('padding-top', "0px");
                 $("#notificationButtons").css("margin-top", (mainHeight * (-1)));
+                $("#shortcutc_messages, #shortcutc_notifications, #shortcutc_requests").css('padding-bottom', mainHeight);
                 $(window).resize(function () {
                     var tMainHeight = $('#main').height();
                     $('.w3-sidebar').css('margin-top', tMainHeight).css('padding-top', tMainHeight);
+                    menu['left'].css('padding-top', "0px");
                     $("#notificationButtons").css("margin-top", (tMainHeight * (-1)));
+                    $("#shortcutc_messages, #shortcutc_notifications, #shortcutc_requests").css('padding-bottom', tMainHeight);
                 });
-                if (window.location.hash) {
-                    loadPage(window.location.hash.substring(1));
-                } else {
-                    loadPage('walls');
-                }
+                loadPage('loader');
                 window.onhashchange = function() {
                     if(window.location.hash.split("/").length > 1) {
                         loadTmpPage(window.location.hash.substring(1));
@@ -184,11 +222,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         .done(function (data) {
                             if (data.success) {
                                 userinfo = data.data.user;
+                                if (window.location.hash) {
+                                    loadPage(window.location.hash.substring(1));
+                                } else {
+                                    loadPage('walls');
+                                }
                                 updateProfile();
                                 updateDP();
                                 var sse = new EventSource(base_url + '/sse.php', { 'withCredentials': true });
                                 sse.addEventListener('requestInfo',function(e){
                                     var tData = JSON.parse(e.data);
+                                    var load_more = 0;
                                     shortcut_requests_list.empty();
                                     for (var i=0; i<tData.length; i++) {
                                         var tElm = shortcut_requests_prototype.clone().removeAttr('id').css('display', 'block');
@@ -205,12 +249,162 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             friendRequest('reject', $(this).attr("id").substring(3));
                                         });
                                         tElm.appendTo(shortcut_requests_list);
+                                        load_more++;
+                                    }
+                                    if (load_more >= 10) {
+                                        shortcut_requests_list.append('<div style="margin:8px;background-color:rgba(239, 239, 234, 1) !important;cursor:pointer;" class="border-bottom w3-padding-small w3-center" data-ripple="rgba(0,0,0,1)" onclick="loadPage(\'requests\');">See all</div>');
                                     }
                                     no_requests.text(tData.length);
                                     if (tData.length) {
                                         no_requests.show();
                                     } else {
                                         no_requests.hide();
+                                        shortcut_requests_list.html('<div class="w3-center w3-container w3-red" style="margin:4px;">No Requests</div>');
+                                    }
+                                    update_shortcut_numbers();
+                                },false);
+                                sse.addEventListener('messagesInfo',function(e){
+                                    var tData = JSON.parse(e.data);
+                                    var chats_added = {};
+                                    var chats_total = 0;
+                                    var load_more = 0;
+                                    shortcut_messages_list.empty();
+                                    for (var i=0; i<tData.chats.length; i++) {
+                                        var tElm = shortcut_messages_prototype.clone().removeAttr('id').css('display', 'block');
+                                        var sender_indicator = '';
+                                        var issender = false;
+                                        if (parseInt(tData.chats[i].sender) === userinfo['id']) {
+                                            issender = true;
+                                            sender_indicator = 'you: ';
+                                        }
+                                        var did = issender ? tData.chats[i].receiver : tData.chats[i].sender;
+                                        if (chats_added[tData.users[did].id] === true) {
+                                            continue;
+                                        } else {
+                                            chats_added[tData.users[did].id] = true;
+                                            load_more++;
+                                        }
+                                        if (tData.users[did].dp === '') {
+                                            url = base_site_url + '/api/media/dp/default.jpg';
+                                        } else {
+                                            url = base_site_url + '/api/media/' + tData.users[did].media + '/' + tData.users[did].dp + '.jpg';
+                                        }
+                                        tElm.find('.messages_dp').attr('src', url);
+                                        tElm.find('.messages_name')
+                                                .text(tData.users[did].first_name + ' ' + tData.users[did].last_name)
+                                                .attr('onclick', 'event.stopPropagation();window.location.href = \'#user/' + tData.users[did].username + '\';')
+                                                .attr('href', '#user/' + tData.users[did].username);
+                                        tElm.find('.messages_text').text(sender_indicator + tData.chats[i].text);
+                                        tElm.attr('onclick', "window.location.href='#chat/"+tData.users[did].username+"';");
+                                        tElm.find('.messages_time').text((new Date(tData.chats[i].time)).toLocaleTimeString());
+                                        tElm.appendTo(shortcut_messages_list);
+                                        if (parseInt(tData.chats[i].isread) === 0 && !issender) {
+                                            chats_total++;
+                                            tElm.css('font-weight', 'bold');
+                                        }
+                                    }
+                                    if (load_more >= 10) {
+                                        shortcut_messages_list.append('<div style="margin:8px;background-color:rgba(239, 239, 234, 1) !important;cursor:pointer;" class="border-bottom w3-padding-small w3-center" data-ripple="rgba(0,0,0,1)" onclick="loadPage(\'messages\');">See all</div>');
+                                    }
+                                    no_messages.text(chats_total);
+                                    if (tData.chats.length) {
+                                        if (chats_total) {
+                                            no_messages.show();
+                                        } else {
+                                            no_messages.hide();
+                                        }
+                                    } else {
+                                        no_messages.hide();
+                                        shortcut_messages_list.html('<div class="w3-center w3-container w3-red" style="margin:4px;">No Messages</div>');
+                                    }
+                                    update_shortcut_numbers();
+                                    if (typeof chats_load !== 'undefined') {
+                                        chats_page=1;
+                                        chats_load();
+                                    }
+                                },false);
+                                sse.addEventListener('notificationInfo',function(e){
+                                    var tData = JSON.parse(e.data);
+                                    var notifications_total = 0;
+                                    var load_more = 0;
+                                    current_notifications = [];
+                                    shortcut_notifications_list.empty();
+                                    for (var i=0; i<tData.notifications.length; i++) {
+                                        var tData2 = tData.notifications[i];
+                                        switch (parseInt(tData2.type)) {
+                                            case 1: //COMMENTS
+                                                var url;
+                                                if (tData2.user.dp === '') {
+                                                    url = base_site_url + '/api/media/dp/default.jpg';
+                                                } else {
+                                                    url = base_site_url + '/api/media/' + tData2.user.media + '/' + tData2.user.dp + '.jpg';
+                                                }
+                                                var innerText = $('<div />').text(tData2.text);
+                                                var others = '';
+                                                if (parseInt(tData2.total_comments) > 1) {
+                                                    others = ' and ' + (parseInt(tData2.total_comments) - 1) + ' others commented on your post:';
+                                                } else {
+                                                    others = ' commented on your post:';
+                                                }
+                                                shortcut_notifications_list.append('<div style="padding-top:8px;'+((parseInt(tData2.isread)===0)?'font-weight:bold;':'')+'"><div class="w3-border-bottom w3-block w3-small" data-ripple="rgba(0,0,0,1)" style="padding:8px; overflow: hidden; text-overflow: ellipsis;cursor:pointer;" onclick="window.location.href=\'#post/'+tData2.pid+'\';"><img src="' + url + '" height="50" width="50" class="w3-circle w3-border w3-left" style="display:inline-block;margin-right:8px;" /><a class="link" onclick="event.stopPropagation();window.location.href = \'#user/' + tData2.user.username + '\';" href="#user/' + tData2.user.username + '">' + tData2.user.first_name + ' ' + tData2.user.last_name + '</a>'+others+'<br />'+innerText.html()+'<br /><div class="w3-right w3-tiny">'+(new Date(tData2.time)).toLocaleString()+'</div></div></div>');
+                                                break;
+                                            case 2: //FRIENDS
+                                                var url;
+                                                if (tData2.user.dp === '') {
+                                                    url = base_site_url + '/api/media/dp/default.jpg';
+                                                } else {
+                                                    url = base_site_url + '/api/media/' + tData2.user.media + '/' + tData2.user.dp + '.jpg';
+                                                }
+                                                shortcut_notifications_list.append('<div style="padding-top:8px;'+((parseInt(tData2.isread)===0)?'font-weight:bold;':'')+'"><div class="w3-border-bottom w3-block w3-small" data-ripple="rgba(0,0,0,1)" style="padding:8px; overflow: hidden; text-overflow: ellipsis;cursor:pointer;" onclick="window.location.href=\'#user/'+tData2.user.username+'\';"><img src="' + url + '" height="50" width="50" class="w3-circle w3-border" style="display:inline-block;margin-right:8px;vertical-align:middle;" />' + tData2.user.first_name + ' ' + tData2.user.last_name + ' accepted your friend request.<br /><div class="w3-right w3-tiny">'+(new Date(tData2.time)).toLocaleString()+'</div></div></div>');
+                                                break;
+                                            case 3: //GROUP
+                                                var url;
+                                                if (tData2.group.dp === '') {
+                                                    url = base_site_url + '/api/media/dp/group.jpg';
+                                                } else {
+                                                    url = base_site_url + '/api/media/' + tData2.group.media + '/' + tData2.group.dp + '.jpg';
+                                                }
+                                                shortcut_notifications_list.append('<div style="padding-top:8px;'+((parseInt(tData2.isread)===0)?'font-weight:bold;':'')+'"><div class="w3-border-bottom w3-block w3-small" data-ripple="rgba(0,0,0,1)" style="padding:8px; overflow: hidden; text-overflow: ellipsis;cursor:pointer;" onclick="window.location.href=\'#group/'+tData2.group.id+'\';"><img src="' + url + '" height="50" width="50" class="w3-circle w3-border" style="display:inline-block;margin-right:8px;vertical-align:middle;" />You were added to the group ' + tData2.group.name + '<br /><div class="w3-right w3-tiny">'+(new Date(tData2.time)).toLocaleString()+'</div></div></div>');
+                                                break;
+                                            case 4: //LIKES
+                                                var url;
+                                                if (tData2.user.dp === '') {
+                                                    url = base_site_url + '/api/media/dp/default.jpg';
+                                                } else {
+                                                    url = base_site_url + '/api/media/' + tData2.user.media + '/' + tData2.user.dp + '.jpg';
+                                                }
+                                                var others = '';
+                                                if (parseInt(tData2.total_likes) > 1) {
+                                                    others = ' and ' + (parseInt(tData2.total_likes) - 1) + ' others liked your post.';
+                                                } else {
+                                                    others = ' liked your post.';
+                                                }
+                                                shortcut_notifications_list.append('<div style="padding-top:8px;'+((parseInt(tData2.isread)===0)?'font-weight:bold;':'')+'"><div class="w3-border-bottom w3-block w3-small" data-ripple="rgba(0,0,0,1)" style="padding:8px; overflow: hidden; text-overflow: ellipsis;cursor:pointer;" onclick="window.location.href=\'#post/'+tData2.pid+'\';"><img src="' + url + '" height="50" width="50" class="w3-circle w3-border w3-left" style="display:inline-block;margin-right:8px;" /><a class="link" onclick="event.stopPropagation();window.location.href = \'#user/' + tData2.user.username + '\';" href="#user/' + tData2.user.username + '">' + tData2.user.first_name + ' ' + tData2.user.last_name + '</a>'+others+'<br /><div class="w3-right w3-tiny">'+(new Date(tData2.time)).toLocaleString()+'</div></div></div>');
+                                                break;
+                                        }
+                                        if (parseInt(tData2.isread)===0) {
+                                            notifications_total++;
+                                            current_notifications.push(tData2.id);
+                                        }
+                                    }
+                                    if (load_more >= 10) {
+                                        shortcut_notifications_list.append('<div style="margin:8px;background-color:rgba(239, 239, 234, 1) !important;cursor:pointer;" class="border-bottom w3-padding-small w3-center" data-ripple="rgba(0,0,0,1)" onclick="loadPage(\'notifications\');">See all</div>');
+                                    }
+                                    no_notifications.text(notifications_total);
+                                    if (tData.notifications.length) {
+                                        if (notifications_total) {
+                                            no_notifications.show();
+                                        } else {
+                                            no_notifications.hide();
+                                        }
+                                    } else {
+                                        no_notifications.hide();
+                                        shortcut_notifications_list.html('<div class="w3-center w3-container w3-red" style="margin:4px;">No notifications</div>');
+                                    }
+                                    update_shortcut_numbers();
+                                    if (typeof notifications_load !== 'undefined') {
+                                        notifications_page=1;
+                                        notifications_load();
                                     }
                                 },false);
                                 showShortcut('requests');
@@ -236,6 +430,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     window.location.href = "#" + fullPage;
                     return;
                 }
+                $(".window").not("#window").remove();
                 var page = fullPage.split('/')[0];
                 closeMenus();
                 leftMenuButtons.removeClass("w3-black w3-hover-black");
@@ -243,6 +438,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 $(content).children("div").hide();
                 if (page !== 'loader') {
                     $(heading).text(page);
+                    title.text(page.charAt(0).toUpperCase() + page.slice(1) + titlePrefix);
                 }
                 if (loadedPages[page]) {
                     $("#page" + page).show();
@@ -263,6 +459,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
             }
             function loadTmpPage(fullPage) {
+                $(".window").not("#window").remove();
                 var page = fullPage.split('/')[0];
                 closeMenus();
                 $(content).children("div").hide();
@@ -270,7 +467,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 $("#page"+page).remove();
                 $('<div />').load("pages/" + page + ".html", function (response, status) {
                     if (status !== "success" && status !== "notmodified") {
-                        console.log(status);
                         this.innerHTML = "Error loading " + page;
                     }
                     $(content).children("#pageloader").hide();
@@ -284,14 +480,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 loadPage(fullPage);
             }
             function updateDP() {
-                if(userinfo['dp']) {
+                if(userinfo && userinfo['dp']) {
                     $(".dp").attr("src", base_site_url + "/api/media/" + userinfo['media'] + "/" + userinfo['dp'] + ".jpg");
                 } else {
                     $(".dp").attr("src", base_site_url + "/api/media/dp/default.jpg");
                 }
             }
             function updateProfile() {
-                $(".full_name").text(userinfo["first_name"] + " " + userinfo["last_name"]);
+                if (userinfo && userinfo["first_name"] && userinfo["last_name"]) {
+                    $(".full_name").text(userinfo["first_name"] + " " + userinfo["last_name"]);
+                }
             }
             function friendRequest(action, friendID) {
                 $.post(base_url + "/friend.php", {'action': action, 'id': friendID})
@@ -314,6 +512,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             }
                         });
             }
+            function update_shortcut_numbers() {
+                var tot = parseInt(no_requests.html())+parseInt(no_messages.html())+parseInt(no_notifications.html());
+                if (tot) {
+                    no_all.text(tot).show();
+                } else {
+                    no_all.text(tot).hide();
+                }
+            }
+            function read_notifications() {
+                for (var i = 0; i < current_notifications.length; i++) {
+                    $.post(base_url + "/notification/read.php", {'id': current_notifications[i]});
+                }
+            };
         </script>
     </body>
 </html>

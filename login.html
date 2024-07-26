@@ -18,23 +18,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <script>if (localStorage.loggedIn)
-                window.location.href = './';</script>
+        <script>
+            if (localStorage.loggedIn)
+                window.location.href = './';
+            window.history.pushState('login', 'Friends\' Wall Social Network', '.');
+        </script>
         <title>Friends' Wall Social Network</title>
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
         <meta name="theme-color" content="#000000" />
+        <link rel="icon" href="img/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="css/w3.css" />
         <link rel="stylesheet" type="text/css" href="css/custom.css" />
         <script type="text/javascript" src="js/jquery.min.js"></script>
     </head>
     <body style="background-image: url('img/bg.jpg');background-attachment: fixed;background-size: cover;">
-        <h1 style="text-align: center">Friends' Wall</h1>
-        <p style="text-align: center">A great place to connect with friends</p>
+        <h1 style="text-align: center;margin-bottom: 0px;"><a href="http://localhost/FriendsWall/"><img src="img/logo.png" alt="Friends' Wall" /></a></h1>
+        <p style="text-align: center;margin-top: 0px;">A great place to connect with friends</p>
         <div class="w3-card-2 w3-animate-left" style="width: 400px;max-width: 100%;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;z-index: 2;margin: auto;margin-top: 8px;" id="loginc">
             <div class="w3-container w3-black"><h3>Login</h3></div>
             <form class="w3-padding-small" style="border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;opacity: 0.7;background-color: white;" onsubmit="login(event);" id="loginform">
                 <div class="w3-row w3-section">
-                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fa fa-user"></i></div>
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fa fa-at"></i></div>
                     <div class="w3-rest">
                         <input type="email" class="w3-input" placeholder="Email" name="email" required />
                     </div>
@@ -69,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
                 </div>
                 <div class="w3-row w3-section">
-                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fas fa-fingerprint"></i></div>
+                    <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fas fa-user-tag"></i></div>
                     <div class="w3-rest">
                         <input type="text" class="w3-input" name="username" placeholder="Username" required />
                     </div>
@@ -83,8 +87,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div class="w3-row w3-section">
                     <div class="w3-col" style="width:50px;line-height: 3em;text-align: center;"><i class="w3-xlarge fas fa-venus"></i></div>
                     <div class="w3-rest w3-row-padding">
-                        <div class="w3-col s6"><button type="button" class="w3-button w3-block w3-black w3-hover-black" onclick="$('#female').addClass('w3-transparent w3-hover-none').removeClass('w3-black w3-hover-black');$(this).removeClass('w3-transparent w3-hover-none').addClass('w3-black w3-hover-black');$('#gender').val('male');" data-ripple="rgba(0, 0, 0, 1)" id="male">Male</button></div>
-                        <div class="w3-col s6"><button type="button" class="w3-button w3-block w3-transparent w3-hover-none" onclick="$('#male').addClass('w3-transparent w3-hover-none').removeClass('w3-black w3-hover-black');$(this).removeClass('w3-transparent w3-hover-none').addClass('w3-black w3-hover-black');$('#gender').val('female');" data-ripple="rgba(0, 0, 0, 1)" id="female">Female</button></div>
+                        <div class="w3-col s6"><button type="button" class="w3-button w3-block w3-black w3-hover-black" onclick="$('#female').addClass('w3-transparent w3-hover-none').removeClass('w3-black w3-hover-black');$(this).removeClass('w3-transparent w3-hover-none').addClass('w3-black w3-hover-black');$('#gender').val('male');" data-ripple="rgba(0, 0, 0, 1)" id="male"><span class="fas fa-male"></span> Male</button></div>
+                        <div class="w3-col s6"><button type="button" class="w3-button w3-block w3-transparent w3-hover-none" onclick="$('#male').addClass('w3-transparent w3-hover-none').removeClass('w3-black w3-hover-black');$(this).removeClass('w3-transparent w3-hover-none').addClass('w3-black w3-hover-black');$('#gender').val('female');" data-ripple="rgba(0, 0, 0, 1)" id="female"><span class="fas fa-female"></span> Female</button></div>
                         <input type="hidden" name="gender" value="male" id="gender" />
                     </div>
                 </div>
@@ -116,6 +120,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </form>
         </div>
+        
+        <div class="background w3-center w3-margin-bottom" style="margin-top: 300px;"><h2>About Friends' wall</h2></div>
+        
+        <div style="margin-bottom: 16px;" class="w3-container w3-center">
+            <div style="text-align: right;">
+                <img class="w3-right w3-card border-bottom w3-margin-left" style="max-width:400px;" src="img/walls.jpg" alt="walls sample" />
+                <h2>Walls</h2>
+                <p>Share moments with your friends, add posts, photos, like, comment, share.</p>
+            </div>
+            <div style="clear: both"></div>
+            <hr class="w3-border-black" />
+            <div style="max-width: 800px;">
+                <img class="w3-left w3-card border-bottom" style="max-width:400px;" src="img/messages.jpg" alt="chat sample" />
+                <h2>Messages</h2>
+                <p>Chats with your friends - instantly, anytime, anywhere.</p>
+            </div>
+            <div style="clear: both"></div>
+            <hr class="w3-border-black" />
+            <div style="text-align: right;">
+                <img class="w3-right w3-card border-bottom w3-margin-left" style="max-width:400px;" src="img/group.jpg" alt="group sample" />
+                <h2>Groups</h2>
+                <p>Create groups, add members, share together.</p>
+            </div>
+            <div style="clear: both"></div>
+            <hr class="w3-border-black" />
+        </div>
+        
+        <p class="w3-center"><a class="w3-text-gray" href="feedback.html">Send feedback</a></p>
 
         <div class="toast w3-card w3-animate-bottom" style="position: fixed;font-size: 1.2em;display: none;height: 2.5em;line-height: 2.5em;background-color: #323232;color: #d1d1d1;opacity: .9;top: 2%;right: 45%;padding-left: 8px;padding-right: 8px;z-index: 999;"></div>
 

@@ -60,7 +60,7 @@ class RequestInformer implements Event
             return true;
         }
         try {
-            $stmt = $this->db->prepare('SELECT users.id, users.username, users.first_name, users.last_name, users.media, users.dp FROM users INNER JOIN friends ON friends.toid = :toid AND users.id = friends.fromid AND friends.accepted=0 ORDER BY friends.time DESC');
+            $stmt = $this->db->prepare('SELECT users.id, users.username, users.first_name, users.last_name, users.media, users.dp FROM users INNER JOIN friends ON friends.toid = :toid AND users.id = friends.fromid AND friends.accepted=0 ORDER BY friends.time DESC LIMIT 10');
             $toid = $this->user->getId();
             $stmt->bindParam(':toid', $toid);
             $stmt->execute();
@@ -83,7 +83,7 @@ class RequestInformer implements Event
     public function update(): string
     {
         if ($this->error !== null) {
-            return '{"error": "' . $this->error . '}';
+            return '{"error": "' . $this->error . '"}';
         } elseif ($this->request_array !== null) {
             return json_encode($this->request_array);
         } else {

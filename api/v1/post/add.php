@@ -18,6 +18,8 @@
 
 include '../../vendor/autoload.php';
 
+use FriendsWall\Groups\Group;
+use FriendsWall\Groups\InvalidGroupAttributeException;
 use FriendsWall\Posts\InvalidPostException;
 use FriendsWall\Posts\Post;
 use FriendsWall\Users\InvalidUserAttributeException;
@@ -41,7 +43,7 @@ if (!isset($_SESSION['id'])) {
 }
 
 if (
-    empty($_POST['text']) &&
+    (empty($_POST['text']) && empty(trim($_POST['text']))) &&
     empty($_FILES['file']) 
 ) {
     $success = false;
@@ -53,7 +55,27 @@ try {
     $user = new User();
     $user->setId($_SESSION['id'], true);
     session_write_close();
+    $gid = null;
+    if (!empty($_POST['gid'])) {
+        $group = new Group();
+        $group->setId($_POST['gid'], true);
+        if ($group->isDeleted()) {
+            $success = false;
+            $error = 'Group deleted';
+            goto output;
+        }
+        if (!$group->hasMember($user->getId())) {
+            $success = false;
+            $error = 'You are not a member of this group';
+            goto output;
+        }
+        $gid = intval($_POST['gid']);
+    }
 } catch (InvalidUserAttributeException $exc) {
+    $success = false;
+    $error = $exc->getMessage();
+} catch (Exception $exc) {
+} catch (InvalidGroupAttributeException $exc) {
     $success = false;
     $error = $exc->getMessage();
 } catch (Exception $exc) {
@@ -148,8 +170,9 @@ try {
     $post = new Post();
     $post
         ->setUid($user->getId())
-        ->setText($_POST['text'])
+        ->setText(trim($_POST['text']))
         ->setMedia($media)
+        ->setGid($gid)
         ->add();
 } catch (InvalidPostException $exc) {
     $success = false;

@@ -7,7 +7,7 @@
         loading
     </div>
     <div style="max-width: 256px;margin: auto;display: none;text-align: center;" id="cropprc">
-        <img src="api/v1/profile/getdp.php" style="width: 100%;" alt="profile picture" id="croppr">
+        <img src="" style="width: 100%;" alt="profile picture" id="croppr">
         <br />
         <button class="w3-button w3-black w3-hover-black" data-ripple="rgba(255, 255, 255, 1)" onclick="crop();">Crop</button>
     </div>
@@ -27,8 +27,8 @@
                                 setTimeout(function() {
                                     $("#change_profile_picture_loader").hide();
                                     $("#cropprc").show();
-                                    var tWidth = $(".croppr-image").width();
-                                    var tHeight = $(".croppr-image").height();
+                                    var tWidth = $("#cropprc .croppr-image").width();
+                                    var tHeight = $("#cropprc .croppr-image").height();
                                     if(tWidth > tHeight) {
                                         instance.resizeTo(tHeight, tHeight, [0,0]);
                                     } else {

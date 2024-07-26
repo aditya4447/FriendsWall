@@ -17,6 +17,7 @@
  */
 namespace FriendsWall\Friends;
 
+use FriendsWall\Notifications\Notification;
 use FriendsWall\Configs\DB;
 use PDO;
 
@@ -85,6 +86,9 @@ class FriendRequest
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
         $this->status = FriendRequest::FRIENDS;
+        (new Notification())
+            ->setParams($this->toid, Notification::TABLE_FRIENDS, $this->id)
+            ->add();
     }
 
     public function reject(): void
